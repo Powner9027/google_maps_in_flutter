@@ -143,9 +143,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 */
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-//import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 
 void main() => runApp(const MyApp());
@@ -218,6 +220,20 @@ class _MyAppState extends State<MyApp> {
   //_getLocation() async{
   //  return Location(37.72068, -97.29339)
   // }
+
+  // created method for getting user current location
+  Future<Position> getUserCurrentLocation() async {
+    await Geolocator.requestPermission().then((value){
+    }).onError((error, stackTrace) async {
+      await Geolocator.requestPermission();
+      print("ERROR"+error.toString());
+    });
+    return await Geolocator.getCurrentPosition();
+  }
+
+  void getPos(){
+  Geolocator.getCurrentPosition();
+  }
 
   void Clicker() {
     setState(() {
