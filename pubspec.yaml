@@ -38,6 +38,7 @@ dependencies:
   google_maps_flutter: ^2.2.5
   google_maps_flutter_web: ^0.4.0+7
   geolocator: ^9.0.2
+  html: ^0.15.2
 
 dev_dependencies:
   flutter_test:
