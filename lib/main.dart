@@ -145,9 +145,12 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 //import 'dart:html';
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'dart:math';
 
 void main() => runApp(const MyApp());
@@ -219,20 +222,9 @@ class _MyAppState extends State<MyApp> {
     return rng.nextDouble() * (high - low) + low;
   }
 
-  //_getLocation() async{
-  //  return Location(37.72068, -97.29339)
-  // }
-
-  // created method for getting user current location
-  Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission().then((value){
-    }).onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
-      print("ERROR"+error.toString());
-    });
-    return await Geolocator.getCurrentPosition();
-  }
-
+  // Variables to store current position
+  String? _currentAddress;
+  Position? _currentPosition;
 
   //Checks and requests users permission
   Future<bool> _handleLocationPermission() async {
@@ -262,10 +254,6 @@ class _MyAppState extends State<MyApp> {
     return true;
   }
 
-  // Variables to store current position
-  String? _currentAddress;
-  Position? _currentPosition;
-
   // gets current position
   Future<void> _getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
@@ -274,9 +262,26 @@ class _MyAppState extends State<MyApp> {
         desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
     }).catchError((e) {
       debugPrint(e);
     });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+        _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        _currentAddress =
+        '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
+
+
   }
 
   void Clicker() {
@@ -294,7 +299,8 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  @override
+
+    @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
@@ -302,7 +308,7 @@ class _MyAppState extends State<MyApp> {
         colorSchemeSeed: Colors.blue,
       ),
       home: Scaffold(
-          appBar: AppBar(title: Text(TitleString), elevation: 2),
+          appBar: AppBar(title: Text(TitleString + ' LAT: ${_currentPosition?.latitude ?? ""}'), elevation: 2),
           body: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
