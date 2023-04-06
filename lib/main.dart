@@ -149,6 +149,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:geolocator/geolocator.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(const MyApp());
 
@@ -159,91 +161,54 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyPin
+{
+  late double latitude;
+  late double longitude;
+  late String description;
+
+
+  MyPin(double lat, double long, String desc)
+  {
+    latitude = lat;
+    longitude = long;
+    description = desc;
+  }
+
+  factory MyPin.fromJson(dynamic json) {
+    return MyPin(json['latitude'] as double, json['longitude'] as double, json['description'] as String);
+  }
   /*
-}
-  late GoogleMapController mapController;
-  Set<Marker> _markers = {};
-
-  //final LatLng _center = const LatLng(45.521563, -122.677433);
-  final LatLng _center = const LatLng(37.72068, -97.29339);
-  final LatLng myLoc = const LatLng(37.72246, -97.29876);
-  String TitleString = "GeoVibes";
-  Random rng = new Random();
-  BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-  BitmapDescriptor bluePin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
-  BitmapDescriptor redPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    setState(() {
-      SetCustomMarker();
-      _markers.add(Marker(
-          markerId: MarkerId("TestMarker" + _markers.length.toString()),
-          position: myLoc,
-          infoWindow: InfoWindow(title: "My Location", snippet: "GeoVibes"),
-          icon:bluePin));
-      AddMarker("Hello World", "John Doe", greenPin);
-      AddMarker("Do we have class today?", "Anonymous", greenPin);
-      AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
-      AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
-      AddMarker("I couldn't think of another message to put here.", "Bob", greenPin);
-      SetCustomMarker();
-    });
-  }
-
-  void SetCustomMarker()
+  MyPin()
   {
-    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon){
-      greenPin = icon;
-    });
+    latitude = 0;
+    longitude = 0;
+    description = "";
   }
-
-  double GetDistance(LatLng pinLoc)
-  {
-    return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) + pow(pinLoc.latitude - pinLoc.latitude, 2));
-  }
-
-  void AddMarker(String message, String username, BitmapDescriptor pinColor) {
-    LatLng pinLoc = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
-    double dist = GetDistance(pinLoc);
-    _markers.add(Marker(
-        markerId: MarkerId("TestMarker" + _markers.length.toString()),
-        position: pinLoc,
-        infoWindow: InfoWindow(title: dist <= .01 ? message : dist.toString(), snippet: username),
-        icon:dist <= .01 ? greenPin : redPin));
-    //icon:BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon) destination = icon)));
-  }
-
-  double getRand(double low, double high) {
-    return rng.nextDouble() * (high - low) + low;
-  }
-
-  //_getLocation() async{
-  //  return Location(37.72068, -97.29339)
-  // }
-
-  void Clicker() {
-    setState(() {
-      //TitleString += _markers.length.toString();
-      _markers.add(Marker(
-          markerId: MarkerId("TestMarker" + _markers.length.toString()),
-          position: LatLng(
-              getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101)),
-          infoWindow: InfoWindow(title: "Hello World", snippet: "John Doe")));
-      //37.71911, 97.28101: Right side of campus
-      //37.71897, 97.29876: Left side of campus
-      //37.72246, 97.29004: Top of campus
-      //37.71611, 97.29034: Bottom of campus
-    });
-  }
-
   */
 
+}
+
+class Tag {
+  String name;
+  int quantity;
+
+  Tag(this.name, this.quantity);
+
+  factory Tag.fromJson(dynamic json) {
+    return Tag(json['name'] as String, json['quantity'] as int);
+  }
+
+  @override
+  String toString() {
+    return '{ ${this.name}, ${this.quantity} }';
+  }
+}
+
+class _MyAppState extends State<MyApp> {
   late GoogleMapController mapController;
   Set<Marker> _markers = {};
 
-  //final LatLng _center = const LatLng(45.521563, -122.677433);
   final LatLng _center = const LatLng(37.72068, -97.29339);
   final LatLng myLoc = const LatLng(37.72246, -97.29876);
   String TitleString = "GeoVibes";
@@ -268,10 +233,12 @@ class _MyAppState extends State<MyApp> {
     "AnotherUser": "AnotherPass"
   };
 
+
+
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     setState(() {
-      SetCustomMarker();
       _markers.add(Marker(
           markerId: MarkerId("TestMarker" + _markers.length.toString()),
           position: myLoc,
@@ -283,16 +250,70 @@ class _MyAppState extends State<MyApp> {
       AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
       AddMarker(
           "I couldn't think of another message to put here.", "Bob", greenPin);
-      SetCustomMarker();
     });
+    LoadPins();
   }
 
-  void SetCustomMarker() {
-    BitmapDescriptor.fromAssetImage(
-        ImageConfiguration.empty, "assets/pin_black.png").then((icon) {
-      greenPin = icon;
-    });
+  void LoadPins() async
+  {
+    //final resp = await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
+    String arrayObjsText =
+        '{"tags": [{"name": "dart", "quantity": 12}, {"name": "flutter", "quantity": 25}, {"name": "json", "quantity": 8}]}';
+
+    var tagObjsJson = jsonDecode(arrayObjsText)['tags'] as List;
+    List<Tag> tagObjs = tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
+
+    tagObjs.forEach((Tag element) {print(element.toString());});
+    //print(tagObjs);
+
+    /*
+    http.Response resp = await http.post(
+      Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      body: "{\"latitude\":55.123123,\"longitude\":29.696969,\"description\":\"Sorry if this messes up the other points!\"}"
+    );
+    print("resp: " + resp.toString());
+    print("body: " + resp.body);
+    print("code: " + resp.statusCode.toString());
+    */
+
+    /*
+    final resp = await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
+    print(resp.body);
+    List<dynamic> tagObjsJson2 = jsonDecode(resp.body);
+    tagObjsJson2.forEach((element) {print("string: " + element.toString());});
+
+    List<MyPin> pinObjs = tagObjsJson2.map((pinJson) => MyPin.fromJson(pinJson)).toList();
+    pinObjs.forEach((element) {print("parsed: " + element.latitude.toString() + "; " + element.longitude.toString() + "; " + element.description);});
+    */
+
+    //SaveMarker(MyPin(54.123123, 29.696969, "Sorry if this messes up the other points!"));
+    //http.Response resp = await http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
+    //  headers: <String, String>{
+    //    'Content-Type': 'application/json; charset=UTF-8',
+    //  },
+    //);
+    //print("resp: " + resp.toString());
+    //print("body: " + resp.body);
+    //print("code: " + resp.statusCode.toString());
   }
+
+  void SaveMarker(MyPin pin) async
+  {
+    //http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
+    /*
+    http.Response resp = await http.post(
+        Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: "{\"latitude\":55.123123,\"longitude\":29.696969,\"description\":\"Sorry if this messes up the other points!\"}"
+    );
+    */
+  }
+
 
   double GetDistance(LatLng pinLoc) {
     return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) +
