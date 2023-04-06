@@ -143,6 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 */
+
+import 'vibebar.dart' as vibebar;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:geolocator/geolocator.dart';
@@ -241,25 +243,24 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: Scaffold(
-          appBar: AppBar(title: Text(TitleString), elevation: 2),
-          body: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                  target: _center, zoom: 14.5),
-              myLocationEnabled: true,
-              markers: _markers),
-          floatingActionButton: FloatingActionButton(
-            onPressed: Clicker,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+      home: Stack(
+        children: <Widget> [
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+                target: _center, zoom: 14.5
+            ),
+            myLocationEnabled: true,
+            markers: _markers
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat
+          vibebar.VibeBar(
+            addVibe: Clicker,
+          ),
+        ],
       ),
     );
   }
 }
-
 
 /*
   @override
