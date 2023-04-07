@@ -181,7 +181,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       SetCustomMarker();
       _markers.add(Marker(
-          markerId: MarkerId("TestMarker" + _markers.length.toString()),
+          markerId: MarkerId("TestMarker${_markers.length}"),
           position: myLoc,
           infoWindow: InfoWindow(title: "My Location", snippet: "GeoVibes"),
           icon:bluePin));
@@ -210,7 +210,7 @@ class _MyAppState extends State<MyApp> {
     LatLng pinLoc = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
     double dist = GetDistance(pinLoc);
     _markers.add(Marker(
-        markerId: MarkerId("TestMarker" + _markers.length.toString()),
+        markerId: MarkerId("TestMarker${_markers.length}"),
         position: pinLoc,
         infoWindow: InfoWindow(title: dist <= .01 ? message : dist.toString(), snippet: username),
         icon:dist <= .01 ? greenPin : redPin));
@@ -258,8 +258,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high)
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
@@ -288,7 +287,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       //TitleString += _markers.length.toString();
       _markers.add(Marker(
-          markerId: MarkerId("TestMarker" + _markers.length.toString()),
+          markerId: MarkerId("TestMarker${_markers.length}"),
           position: LatLng(
               getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101)),
           infoWindow: InfoWindow(title: "Hello World", snippet: "John Doe")));
@@ -302,13 +301,17 @@ class _MyAppState extends State<MyApp> {
 
     @override
   Widget build(BuildContext context) {
+    _handleLocationPermission();
+    _getCurrentPosition();
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
       home: Scaffold(
-          appBar: AppBar(title: Text(TitleString + ' LAT: ${_currentPosition?.latitude ?? ""}'), elevation: 2),
+          appBar: AppBar(title: Text(TitleString), elevation: 2),
+          bottomNavigationBar: BottomAppBar(child: Text('LAT: ${_currentPosition?.latitude ?? ""}'+ "\n" +
+              'LNG: ${_currentPosition?.longitude ?? ""}'),elevation: 2),
           body: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
