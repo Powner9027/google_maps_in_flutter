@@ -17,7 +17,7 @@ class _GeolocationState extends State<Geolocation> {
   String? _currentAddress;
   Position? _currentPosition;
 
-  //Checks and requests users permission
+  //Checks and requests users permission for location
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -45,12 +45,11 @@ class _GeolocationState extends State<Geolocation> {
     return true;
   }
 
-// gets current position
+  // gets current position
   Future<void> _getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high)
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
@@ -59,6 +58,7 @@ class _GeolocationState extends State<Geolocation> {
     });
   }
 
+  //Address information like streets, postal codes, ect.
   Future<void> _getAddressFromLatLng(Position position) async {
     await placemarkFromCoordinates(
         _currentPosition!.latitude, _currentPosition!.longitude)
