@@ -226,7 +226,7 @@ class _MyAppState extends State<MyApp> {
   String? _currentAddress;
   Position? _currentPosition;
 
-  //Checks and requests users permission
+  //Checks and requests users permission for location
   Future<bool> _handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -267,6 +267,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  //Adrss informaation like streets, postal codes, ect.
   Future<void> _getAddressFromLatLng(Position position) async {
     await placemarkFromCoordinates(
         _currentPosition!.latitude, _currentPosition!.longitude)
