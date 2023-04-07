@@ -1,5 +1,3 @@
-
-
 //import 'package:location/location.dart'
 
 /*
@@ -161,22 +159,20 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class MyPin
-{
+class MyPin {
   late double latitude;
   late double longitude;
   late String description;
 
-
-  MyPin(double lat, double long, String desc)
-  {
+  MyPin(double lat, double long, String desc) {
     latitude = lat;
     longitude = long;
     description = desc;
   }
 
   factory MyPin.fromJson(dynamic json) {
-    return MyPin(json['latitude'] as double, json['longitude'] as double, json['description'] as String);
+    return MyPin(json['latitude'] as double, json['longitude'] as double,
+        json['description'] as String);
   }
   /*
   MyPin()
@@ -186,7 +182,6 @@ class MyPin
     description = "";
   }
   */
-
 }
 
 class Tag {
@@ -213,14 +208,14 @@ class _MyAppState extends State<MyApp> {
   final LatLng myLoc = const LatLng(37.72246, -97.29876);
   String TitleString = "GeoVibes";
   Random rng = new Random();
-  BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueGreen);
-  BitmapDescriptor bluePin = BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueAzure);
-  BitmapDescriptor redPin = BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueMagenta);
-  BitmapDescriptor orangePin = BitmapDescriptor.defaultMarkerWithHue(
-      BitmapDescriptor.hueOrange);
+  BitmapDescriptor greenPin =
+      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+  BitmapDescriptor bluePin =
+      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+  BitmapDescriptor redPin =
+      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
+  BitmapDescriptor orangePin =
+      BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
   bool displayLogin = true;
   bool blnLoginStatus = false;
   String strLoginStatus = "";
@@ -232,9 +227,6 @@ class _MyAppState extends State<MyApp> {
     "ExampleUser": "ExamplePass",
     "AnotherUser": "AnotherPass"
   };
-
-
-
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -254,16 +246,18 @@ class _MyAppState extends State<MyApp> {
     LoadPins();
   }
 
-  void LoadPins() async
-  {
+  void LoadPins() async {
     //final resp = await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
     String arrayObjsText =
         '{"tags": [{"name": "dart", "quantity": 12}, {"name": "flutter", "quantity": 25}, {"name": "json", "quantity": 8}]}';
 
     var tagObjsJson = jsonDecode(arrayObjsText)['tags'] as List;
-    List<Tag> tagObjs = tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
+    List<Tag> tagObjs =
+        tagObjsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
 
-    tagObjs.forEach((Tag element) {print(element.toString());});
+    tagObjs.forEach((Tag element) {
+      print(element.toString());
+    });
     //print(tagObjs);
 
     /*
@@ -300,8 +294,7 @@ class _MyAppState extends State<MyApp> {
     //print("code: " + resp.statusCode.toString());
   }
 
-  void SaveMarker(MyPin pin) async
-  {
+  void SaveMarker(MyPin pin) async {
     //http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
     /*
     http.Response resp = await http.post(
@@ -314,15 +307,14 @@ class _MyAppState extends State<MyApp> {
     */
   }
 
-
   double GetDistance(LatLng pinLoc) {
     return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) +
         pow(pinLoc.latitude - pinLoc.latitude, 2));
   }
 
   void AddMarker(String message, String username, BitmapDescriptor pinColor) {
-    LatLng pinLoc = LatLng(
-        getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
+    LatLng pinLoc =
+        LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
     double dist = GetDistance(pinLoc);
     _markers.add(Marker(
         markerId: MarkerId("TestMarker" + _markers.length.toString()),
@@ -343,11 +335,9 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           displayLogin = false;
         });
-      }
-      else {
+      } else {
         setState(() {
-          strLoginStatus =
-              "Incorrect password for username: " + LoggedOnUser;
+          strLoginStatus = "Incorrect password for username: " + LoggedOnUser;
           blnLoginStatus = true;
         });
       }
@@ -368,13 +358,11 @@ class _MyAppState extends State<MyApp> {
         strLoginStatus = "Username already exists";
         blnLoginStatus = true;
       });
-    }
-    else {
+    } else {
       setState(() {
         displayLogin = false;
       });
     }
-
 
     //print("Writing to file");
     //File f = File("DeleteMe.txt");
@@ -413,81 +401,98 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Visibility(
         visible: displayLogin,
-        child:
-          Builder(builder: (BuildContext context) {
-            return Scaffold(
-              body: Column(
-                children: [
+        replacement: Stack(
+          children: <Widget>[
+            GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition:
+                    CameraPosition(target: _center, zoom: 14.5),
+                myLocationEnabled: true,
+                zoomControlsEnabled: false,
+                mapToolbarEnabled: false,
+                markers: _markers),
+            vibebar.VibeBar(),
+          ],
+        ),
+        child: Builder(builder: (BuildContext context) {
+          return Scaffold(
+            body: Column(
+              children: [
                 const SizedBox(height: 50),
-                Row(
-                  children: [
-                  const SizedBox(width: 50,),
+                Row(children: [
+                  const SizedBox(
+                    width: 50,
+                  ),
                   Expanded(
-                    child: TextField(decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Username',
-                  //onChanged: (value) => LoggedOnUser = value,
-                    ),
-                  //onChanged: (value) => LoggedOnUser = value,
-                    onChanged: (value) {LoggedOnUser = value;},
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Username',
+                        //onChanged: (value) => LoggedOnUser = value,
+                      ),
+                      //onChanged: (value) => LoggedOnUser = value,
+                      onChanged: (value) {
+                        LoggedOnUser = value;
+                      },
                     ),
                   ),
-                  const SizedBox(width: 50,),
-                  ]
+                  const SizedBox(
+                    width: 50,
                   ),
-
+                ]),
                 const SizedBox(height: 50),
-                Row(
-                  children: [
-                    const SizedBox(width: 50,),
-                    Expanded(
-                      child: TextField(decoration: const InputDecoration(
+                Row(children: [
+                  const SizedBox(
+                    width: 50,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         hintText: 'Password',
                       ),
-                      onChanged: (value) {LoggedOnPass = value;},
-                      ),
+                      onChanged: (value) {
+                        LoggedOnPass = value;
+                      },
                     ),
-                    const SizedBox(width: 50,),
-                  ]
                   ),
+                  const SizedBox(
+                    width: 50,
+                  ),
+                ]),
                 const SizedBox(height: 25),
-                Row(
-                  children:[
-                    const SizedBox(width:50),
-                    TextButton(onPressed: LogIn, child: Text("Log In"), style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 20),)),
-                    const SizedBox(width:50),
-                    TextButton(onPressed: CreateAccount, child: Text("Create Account"), style: TextButton.styleFrom(textStyle: const TextStyle(fontSize: 20),)),
-                    const SizedBox(width:50),
-                  ]
-                ),
+                Row(children: [
+                  const SizedBox(width: 50),
+                  TextButton(
+                      onPressed: LogIn,
+                      style: TextButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: const Text("Log In")),
+                  const SizedBox(width: 50),
+                  TextButton(
+                      onPressed: CreateAccount,
+                      style: TextButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: const Text("Create Account")),
+                  const SizedBox(width: 50),
+                ]),
                 const SizedBox(height: 5),
                 Visibility(
-                  visible:blnLoginStatus,
-                  child:
-                  Text(strLoginStatus,
-                    style: const TextStyle(color: Colors.red)),
-                ),],),);}),
-        replacement: Stack(
-        children: <Widget>[
-          GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                  target: _center, zoom: 14.5
-              ),
-              myLocationEnabled: true,
-              markers: _markers
-          ),
-          vibebar.VibeBar(
-            addVibe: Clicker,
-          ),
-        ],
-      ),
+                  visible: blnLoginStatus,
+                  child: Text(strLoginStatus,
+                      style: const TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 }
-  /*
+/*
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'App name',
@@ -629,12 +634,7 @@ class _MyAppState extends State<MyApp> {
   }
 */
 
-
-
-
-
-
-  /*
+/*
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
@@ -715,7 +715,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 */
-
 
 /*
   Widget build(BuildContext context) {
