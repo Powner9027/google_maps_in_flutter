@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 void main() => runApp(const MyApp());
 
@@ -77,6 +78,13 @@ class _MyAppState extends State<MyApp> {
   String LoggedOnUser = "User";
   String LoggedOnPass = "Password";
 
+  Future<String> readJsonFile(String filePath) async{
+    var input = await File(filePath).readAsString();
+    var output = jsonDecode(input);
+    return output;
+  }
+
+
   //Map<string, string> allUsers = "Username;Password\nAnotherName;AnotherPass\nJohnDoe;DoeJohn";
   Map<String, String> allUsers = {
     "ExampleUser": "ExamplePass",
@@ -85,6 +93,8 @@ class _MyAppState extends State<MyApp> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    //String mapStyle = await readJsonFile("mapStyle.json");
+    String mapStyle = '[{"featureType":"all","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#f2f2f2"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"visibility":"off"},{"color":"#c0e8e8"}]},{"featureType":"poi.attraction","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.business","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.government","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.medical","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.place_of_worship","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.school","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.sports_complex","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"geometry","stylers":[{"lightness":100},{"visibility":"simplified"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"visibility":"on"},{"lightness":700}]},{"featureType":"water","elementType":"all","stylers":[{"color":"#7dcdcd"}]},{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#43b1ed"},{"visibility":"on"}]},{"featureType":"water","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]}]';
     setState(() {
       _markers.add(Marker(
           markerId: MarkerId("TestMarker" + _markers.length.toString()),
@@ -97,6 +107,7 @@ class _MyAppState extends State<MyApp> {
       AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
       AddMarker(
           "I couldn't think of another message to put here.", "Bob", greenPin);
+      mapController.setMapStyle(mapStyle);
     });
     LoadPins();
   }
@@ -254,20 +265,24 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
+      // TODO: Change from Visibility to Route
       home: Visibility(
         visible: displayLogin,
-        replacement: Stack(
-          children: <Widget>[
-            GoogleMap(
-                onMapCreated: _onMapCreated,
-                initialCameraPosition:
-                    CameraPosition(target: _center, zoom: 14.5),
-                myLocationEnabled: true,
-                zoomControlsEnabled: false,
-                mapToolbarEnabled: false,
-                markers: _markers),
-            vibebar.VibeBar(),
-          ],
+        // TODO: Consider using keyboard_avoider instead?
+        replacement: Scaffold(
+          body: Stack(
+            children: <Widget>[
+              GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition:
+                      CameraPosition(target: _center, zoom: 14.5),
+                  myLocationEnabled: true,
+                  zoomControlsEnabled: false,
+                  mapToolbarEnabled: false,
+                  markers: _markers),
+              const vibebar.VibeBar(),
+            ],
+          ),
         ),
         child: Builder(builder: (BuildContext context) {
           return Scaffold(
