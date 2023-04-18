@@ -1,150 +1,4 @@
 
-
-//import 'package:location/location.dart'
-
-/*
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'dart:async';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-class GoogleMapsDemo extends StatefulWidget {
-  @override
-  _GoogleMapsDemoState createState() => _GoogleMapsDemoState();
-}
-
-class _GoogleMapsDemoState extends State<GoogleMapsDemo> {
-  late GoogleMapController mapController;
-  Location location = Location(0, 0);
-
-  late Marker marker;
-
-  @override
-  void initState() {
-    super.initState();
-    location.onLocationChanged().listen((location) async {
-      if(marker != null) {
-        mapController.removeMarker(marker);
-      }
-      marker = await mapController?.addMarker(MarkerOptions(
-        position: LatLng(location["latitude"], location["longitude"]),
-      ));
-      mapController?.moveCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(
-              location["latitude"],
-              location["longitude"],
-            ),
-            zoom: 20.0,
-          ),
-        ),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-              options: GoogleMapOptions(
-                cameraPosition: CameraPosition(
-                  target: LatLng(37.4219999, -122.0862462),
-                ),
-                myLocationEnabled: true,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
-
-//import 'package:flutter/material.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
-//import 'package:location/location.dart';
-
-/*
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  LatLng _initialcameraposition = LatLng(20.5937, 78.9629);
-  late GoogleMapController _controller;
-  Location _location = Location();
-
-  void _onMapCreated(GoogleMapController _cntlr)
-  {
-    _controller = _cntlr;
-    /*
-    var location = new Location();
-    location.onLocationChanged().listen((LocationData currentLocation) {
-      print(currentLocation.latitude);
-      print(currentLocation.longitude);
-    });
-
-    _location.onLocationChanged().listen((LocationData l) {
-      _controller.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude, l.longitude),zoom: 15),
-        ),
-      );
-    });
-    */
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(target: _initialcameraposition),
-              mapType: MapType.normal,
-              onMapCreated: _onMapCreated,
-              myLocationEnabled: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-*/
-//import 'dart:html';
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -167,64 +21,11 @@ class _MyAppState extends State<MyApp> {
   late GoogleMapController mapController;
   Set<Marker> _markers = {};
 
-  //final LatLng _center = const LatLng(45.521563, -122.677433);
-  final LatLng _center = const LatLng(37.72068, -97.29339);
-  final LatLng myLoc = const LatLng(37.72246, -97.29876);
-  String TitleString = "GeoVibes";
-  Random rng = new Random();
-  BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-  BitmapDescriptor bluePin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
-  BitmapDescriptor redPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-    setState(() {
-      SetCustomMarker();
-      _markers.add(Marker(
-          markerId: MarkerId("TestMarker${_markers.length}"),
-          position: myLoc,
-          infoWindow: InfoWindow(title: "My Location", snippet: "GeoVibes"),
-          icon:bluePin));
-      AddMarker("Hello World", "John Doe", greenPin);
-      AddMarker("Do we have class today?", "Anonymous", greenPin);
-      AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
-      AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
-      AddMarker("I couldn't think of another message to put here.", "Bob", greenPin);
-      SetCustomMarker();
-    });
-  }
-
-  void SetCustomMarker()
-  {
-    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon){
-      greenPin = icon;
-    });
-  }
-
-  double GetDistance(LatLng pinLoc)
-  {
-    return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) + pow(pinLoc.latitude - pinLoc.latitude, 2));
-  }
-
-  void AddMarker(String message, String username, BitmapDescriptor pinColor) {
-    LatLng pinLoc = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
-    double dist = GetDistance(pinLoc);
-    _markers.add(Marker(
-        markerId: MarkerId("TestMarker${_markers.length}"),
-        position: pinLoc,
-        infoWindow: InfoWindow(title: dist <= .01 ? message : dist.toString(), snippet: username),
-        icon:dist <= .01 ? greenPin : redPin));
-    //icon:BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon) destination = icon)));
-  }
-
-
-  double getRand(double low, double high) {
-    return rng.nextDouble() * (high - low) + low;
-  }
-
   // Variables to store current position
   String? _currentAddress;
   Position? _currentPosition;
+  double? lat;
+  double? lon;
 
   //Checks and requests users permission for location
   Future<bool> _handleLocationPermission() async {
@@ -263,8 +64,10 @@ class _MyAppState extends State<MyApp> {
       setState(() => _currentPosition = position);
       _getAddressFromLatLng(_currentPosition!);
     }).catchError((e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     });
+    lat = _currentPosition!.latitude;
+    lon = _currentPosition!.longitude;
   }
 
   //Adrss informaation like streets, postal codes, ect.
@@ -280,9 +83,77 @@ class _MyAppState extends State<MyApp> {
     }).catchError((e) {
       debugPrint(e);
     });
-
-
   }
+
+  String titleString = "GeoVibes";
+  Random rng = new Random();
+  BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+  BitmapDescriptor bluePin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+  BitmapDescriptor redPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta);
+
+  void _onMapCreated(GoogleMapController controller) {
+    _getCurrentPosition();
+    final LatLng myLoc = LatLng(_currentPosition!.latitude.toDouble(), _currentPosition!.longitude.toDouble());
+
+    mapController = controller;
+    setState(() {
+      SetCustomMarker();
+      _markers.add(Marker(
+          markerId: MarkerId("TestMarker${_markers.length}"),
+          position: myLoc,
+          infoWindow: InfoWindow(title: "My Location", snippet: "GeoVibes"),
+          icon:bluePin));
+      AddMarker("Hello World", "John Doe", greenPin);
+      AddMarker("Do we have class today?", "Anonymous", greenPin);
+      AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
+      AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
+      AddMarker("I couldn't think of another message to put here.", "Bob", greenPin);
+      SetCustomMarker();
+    });
+  }
+
+  void SetCustomMarker()
+  {
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon){
+      greenPin = icon;
+    });
+  }
+
+  /*
+  double GetDistance(LatLng pinLoc)
+  {
+    _getCurrentPosition();
+    final LatLng myLoc = LatLng(_currentPosition!.latitude.toDouble(), _currentPosition!.longitude.toDouble());
+    return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) + pow(pinLoc.latitude - pinLoc.latitude, 2));
+  }
+  */
+
+  double getDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double radius = 6371; // Earth's radius in kilometers
+    double dLat = (lat2 - lat1) * pi / 180;
+    double dLon = (lon2 - lon1) * pi / 180;
+    double a = pow(sin(dLat / 2), 2) + cos(lat1* pi / 180) * cos(lat2* pi / 180) * pow(sin(dLon / 2), 2);
+    double c = 2 * asin(sqrt(a));
+    return radius * c;
+  }
+
+  void AddMarker(String message, String username, BitmapDescriptor pinColor) {
+    LatLng pinLoc = LatLng(getRand(_currentPosition!.latitude, _currentPosition!.latitude+.02), getRand(_currentPosition!.longitude, _currentPosition!.longitude+.2));
+    double dist = getDistance(pinLoc.latitude, pinLoc.longitude, _currentPosition!.latitude, _currentPosition!.longitude);
+    _markers.add(Marker(
+        markerId: MarkerId("TestMarker${_markers.length}"),
+        position: pinLoc,
+        infoWindow: InfoWindow(title: dist <= .01 ? message : dist.toString(), snippet: username),
+        icon:dist <= .01 ? greenPin : redPin));
+    //icon:BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon) destination = icon)));
+  }
+
+
+  double getRand(double low, double high) {
+    return rng.nextDouble() * (high - low) + low;
+  }
+
+
 
   void Clicker() {
     setState(() {
@@ -310,13 +181,13 @@ class _MyAppState extends State<MyApp> {
         colorSchemeSeed: Colors.blue,
       ),
       home: Scaffold(
-          appBar: AppBar(title: Text(TitleString), elevation: 2),
-          bottomNavigationBar: BottomAppBar(child: Text('LAT: ${_currentPosition?.latitude ?? ""}'+ "\n" +
-              'LNG: ${_currentPosition?.longitude ?? ""}'),elevation: 2),
+          appBar: AppBar(title: Text(titleString), elevation: 2),
+          bottomNavigationBar: BottomAppBar(elevation: 2, child: Text('LAT: ${_currentPosition?.latitude ?? ""} ' "\n"
+              'LNG: ${_currentPosition?.longitude ?? ""}')),
           body: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
-                  target: _center, zoom: 14.5),
+                  target: LatLng(lat!, lon!), zoom: 14.5),
               myLocationEnabled: true,
               markers: _markers),
           floatingActionButton: FloatingActionButton(
