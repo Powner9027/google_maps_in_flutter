@@ -119,14 +119,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  /*
+/*
   double GetDistance(LatLng pinLoc)
   {
     _getCurrentPosition();
     final LatLng myLoc = LatLng(_currentPosition!.latitude.toDouble(), _currentPosition!.longitude.toDouble());
     return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) + pow(pinLoc.latitude - pinLoc.latitude, 2));
   }
-  */
+*/
 
   double getDistance(double lat1, double lon1, double lat2, double lon2) {
     const double radius = 6371; // Earth's radius in kilometers
@@ -138,8 +138,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void AddMarker(String message, String username, BitmapDescriptor pinColor) {
-    LatLng pinLoc = LatLng(getRand(_currentPosition!.latitude, _currentPosition!.latitude+.02), getRand(_currentPosition!.longitude, _currentPosition!.longitude+.2));
-    double dist = getDistance(pinLoc.latitude, pinLoc.longitude, _currentPosition!.latitude, _currentPosition!.longitude);
+    LatLng pinLoc = LatLng(getRand(_currentPosition!.latitude, _currentPosition!.latitude+.02),
+        getRand(_currentPosition!.longitude, _currentPosition!.longitude+.02));
+    double dist = getDistance(pinLoc.latitude, pinLoc.longitude,
+        _currentPosition!.latitude, _currentPosition!.longitude);
     _markers.add(Marker(
         markerId: MarkerId("TestMarker${_markers.length}"),
         position: pinLoc,
@@ -148,12 +150,9 @@ class _MyAppState extends State<MyApp> {
     //icon:BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon) destination = icon)));
   }
 
-
   double getRand(double low, double high) {
     return rng.nextDouble() * (high - low) + low;
   }
-
-
 
   void Clicker() {
     setState(() {
@@ -161,7 +160,7 @@ class _MyAppState extends State<MyApp> {
       _markers.add(Marker(
           markerId: MarkerId("TestMarker${_markers.length}"),
           position: LatLng(
-              getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101)),
+              getRand(_currentPosition!.latitude, _currentPosition!.latitude+.02), getRand(_currentPosition!.longitude, _currentPosition!.longitude+.02)),
           infoWindow: InfoWindow(title: "Hello World", snippet: "John Doe")));
       //37.71911, 97.28101: Right side of campus
       //37.71897, 97.29876: Left side of campus
