@@ -12,10 +12,14 @@ class VibeBar extends StatefulWidget {
 class _VibeBarState extends State<VibeBar> {
   bool toggle = false;
 
-  void addVibe() {
+  void toggleVibe() {
     setState(() {
       toggle ? toggle = false : toggle = true;
     });
+  }
+
+  void sendVibe() {
+
   }
 
   @override
@@ -45,9 +49,9 @@ class _VibeBarState extends State<VibeBar> {
                         child: Container(
                           width: width / 5,
                           height: width / 5,
-                          color: Colors.white.withOpacity(.7),
+                          color: const Color(0xF8F8F8FF),
                           child: IconButton(
-                            onPressed: addVibe,
+                            onPressed: toggleVibe,
                             // TODO: Figure out how to smoothly animate
                             icon: Transform.rotate(
                               angle: toggle ? 0 : math.pi / 4,
@@ -84,32 +88,58 @@ class _VibeBarState extends State<VibeBar> {
                   width: width * .9,
                   height: height / 4 - 20,
                   child: Material(
-                    child: TextField(
-                      // TODO: make this have a cool blur effect in the background
-                      decoration: InputDecoration(
-                        hintText: "Share your message with the world!",
-                        filled: true,
-                        fillColor: const Color(0xF8F8F8FF),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                          borderRadius: BorderRadius.circular(30),
+                    child: Stack(
+                      children: <Widget>[
+                        TextField(
+                          // TODO: make this have a cool blur effect in the background
+                          decoration: InputDecoration(
+                            hintText: "Share your message with the world!",
+                            hintStyle: TextStyle(color: Color(0xB2D4E8FF)),
+                            filled: true,
+                            fillColor: const Color(0xF8F8F8FF),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          minLines: 7,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      minLines: 7,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
+                        Positioned(
+                          right: width / 25,
+                            bottom: width / 25,
+                            child: ClipOval(
+                              child: Container(
+                                color: Colors.white,
+                                height: width / 8,
+                                width: width / 8,
+                                child: IconButton(
+                                  alignment: Alignment.center,
+                                    iconSize: width / 8,
+                                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    onPressed: sendVibe,
+                                    icon: Icon(
+                                        Icons.chevron_right_rounded,
+                                        color: Color(0xff00a0ff),
+                                    )
+                                    )
+                                ),
+                              )
+                            )
+                      ]
                     ),
                   ),
                 )

@@ -161,8 +161,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void SaveMarker(MyPin pin) async {
-    //http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
-    /*
+    http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
     http.Response resp = await http.post(
         Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
         headers: <String, String>{
@@ -170,7 +169,6 @@ class _MyAppState extends State<MyApp> {
         },
         body: "{\"latitude\":55.123123,\"longitude\":29.696969,\"description\":\"Sorry if this messes up the other points!\"}"
     );
-    */
   }
 
   double GetDistance(LatLng pinLoc) {
