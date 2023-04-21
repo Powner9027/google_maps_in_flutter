@@ -147,7 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
 import 'vibebar.dart' as vibebar;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-//import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -166,27 +167,20 @@ class MyPin
   late double latitude;
   late double longitude;
   late String description;
+  late String username;
 
-
-  MyPin(double lat, double long, String desc)
+  MyPin(double lat, double long, String desc, String _username)
   {
     latitude = lat;
     longitude = long;
     description = desc;
+    username = _username;
   }
 
   factory MyPin.fromJson(dynamic json) {
-    return MyPin(json['latitude'] as double, json['longitude'] as double, json['description'] as String);
+    return MyPin(json['latitude'] as double, json['longitude'] as double,
+        json['description'] as String, json['username'] as String);
   }
-  /*
-  MyPin()
-  {
-    latitude = 0;
-    longitude = 0;
-    description = "";
-  }
-  */
-
 }
 
 class Tag {
@@ -209,8 +203,8 @@ class _MyAppState extends State<MyApp> {
   late GoogleMapController mapController;
   Set<Marker> _markers = {};
 
-  final LatLng _center = const LatLng(37.72068, -97.29339);
-  final LatLng myLoc = const LatLng(37.72246, -97.29876);
+  //final LatLng _center = const LatLng(37.72068, -97.29339);
+  //final LatLng myLoc = const LatLng(37.72246, -97.29876);
   String TitleString = "GeoVibes";
   Random rng = new Random();
   BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(
@@ -226,6 +220,8 @@ class _MyAppState extends State<MyApp> {
   String strLoginStatus = "";
   String LoggedOnUser = "User";
   String LoggedOnPass = "Password";
+  String? _currentAddress;
+  Position? _currentPosition;
 
   //Map<string, string> allUsers = "Username;Password\nAnotherName;AnotherPass\nJohnDoe;DoeJohn";
   Map<String, String> allUsers = {
@@ -233,23 +229,73 @@ class _MyAppState extends State<MyApp> {
     "AnotherUser": "AnotherPass"
   };
 
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Location services are disabled. Please enable the services')));
+      return false;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')));
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Location permissions are permanently denied, we cannot request permissions.')));
+      return false;
+    }
+    return true;
+  }
 
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<void> _getAddressFromLatLng(Position position) async {
+    await placemarkFromCoordinates(
+        _currentPosition!.latitude, _currentPosition!.longitude)
+        .then((List<Placemark> placemarks) {
+      Placemark place = placemarks[0];
+      setState(() {
+        _currentAddress =
+        '${place.street}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.postalCode}';
+      });
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     setState(() {
       _markers.add(Marker(
           markerId: MarkerId("TestMarker" + _markers.length.toString()),
-          position: myLoc,
+          position: new LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
           infoWindow: InfoWindow(title: "My Location", snippet: "GeoVibes"),
           icon: bluePin));
-      AddMarker("Hello World", "John Doe", greenPin);
-      AddMarker("Do we have class today?", "Anonymous", greenPin);
-      AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
-      AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
-      AddMarker(
-          "I couldn't think of another message to put here.", "Bob", greenPin);
+      //AddMarker("Hello World", "John Doe", greenPin);
+      //AddMarker("Do we have class today?", "Anonymous", greenPin);
+      //AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
+      //AddMarker("Anybody listening?", "Lorem Ipsom", greenPin);
+      //AddMarker(
+      //    "I couldn't think of another message to put here.", "Bob", greenPin);
     });
     LoadPins();
   }
@@ -279,7 +325,7 @@ class _MyAppState extends State<MyApp> {
     print("code: " + resp.statusCode.toString());
     */
 
-    /*
+
     final resp = await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
     print(resp.body);
     List<dynamic> tagObjsJson2 = jsonDecode(resp.body);
@@ -287,7 +333,21 @@ class _MyAppState extends State<MyApp> {
 
     List<MyPin> pinObjs = tagObjsJson2.map((pinJson) => MyPin.fromJson(pinJson)).toList();
     pinObjs.forEach((element) {print("parsed: " + element.latitude.toString() + "; " + element.longitude.toString() + "; " + element.description);});
-    */
+
+    pinObjs.forEach((element)
+    {
+      print("Attempting to create "  + element.latitude.toString() + "; " + element.longitude.toString() + "; " + element.description + "; " + element.username);
+      double dist = GetDistance(new LatLng(element.latitude, element.longitude));
+      setState(() {
+        _markers.add(Marker(
+            markerId: MarkerId("TestMarker" + _markers.length.toString()),
+            position: new LatLng(element.latitude, element.longitude),
+            infoWindow: InfoWindow(
+                title: dist <= .01 ? element.description : dist.toString(),
+                snippet: dist <= .01 ? element.username : ""),
+            icon: dist <= .01 ? greenPin : redPin));
+      });
+    });
 
     //SaveMarker(MyPin(54.123123, 29.696969, "Sorry if this messes up the other points!"));
     //http.Response resp = await http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
@@ -316,8 +376,8 @@ class _MyAppState extends State<MyApp> {
 
 
   double GetDistance(LatLng pinLoc) {
-    return sqrt(pow(pinLoc.longitude - myLoc.longitude, 2) +
-        pow(pinLoc.latitude - pinLoc.latitude, 2));
+    return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
+        pow(pinLoc.latitude - _currentPosition!.latitude, 2));
   }
 
   void AddMarker(String message, String username, BitmapDescriptor pinColor) {
@@ -385,14 +445,17 @@ class _MyAppState extends State<MyApp> {
   //  return Location(37.72068, -97.29339)
   // }
 
-  void Clicker() {
+  void Clicker(String msg) async {
+    LatLng pos = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
+    //msg = "Test Message " + (_markers.length - 2).toString();
+
     setState(() {
+
       //TitleString += _markers.length.toString();
       _markers.add(Marker(
           markerId: MarkerId("TestMarker" + _markers.length.toString()),
-          position: LatLng(
-              getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101)),
-          infoWindow: InfoWindow(title: "Hello World", snippet: LoggedOnUser),
+          position: LatLng(pos.latitude, pos.longitude),
+          infoWindow: InfoWindow(title: msg, snippet: LoggedOnUser),
           icon: orangePin));
       print("Username:");
       print(LoggedOnUser);
@@ -402,16 +465,28 @@ class _MyAppState extends State<MyApp> {
       //37.72246, 97.29004: Top of campus
       //37.71611, 97.29034: Bottom of campus
     });
+
+    print("{\"latitude\":" + pos.latitude.toString() + ",\"longitude\":" + pos.longitude.toString() + ",\"description\":\"" + msg + "\",\"username\":\"" + LoggedOnUser + "\"}");
+    http.Response resp = await http.post(
+        Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: "{\"latitude\":" + pos.latitude.toString() + ",\"longitude\":" + pos.longitude.toString() + ",\"description\":\"" + msg + "\",\"username\":\"" + LoggedOnUser + "\"}"
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    _handleLocationPermission();
+    _getCurrentPosition();
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: Visibility(
+      home: Stack(children:[
+    Visibility(
         visible: displayLogin,
         child:
           Builder(builder: (BuildContext context) {
@@ -468,22 +543,24 @@ class _MyAppState extends State<MyApp> {
                   Text(strLoginStatus,
                     style: const TextStyle(color: Colors.red)),
                 ),],),);}),
-        replacement: Stack(
-        children: <Widget>[
-          GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                  target: _center, zoom: 14.5
-              ),
-              myLocationEnabled: true,
-              markers: _markers
-          ),
-          vibebar.VibeBar(
-            addVibe: Clicker,
-          ),
-        ],
+        replacement: Scaffold(
+          body: Stack(
+          children: <Widget>[
+            GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                    target: new LatLng(_currentPosition!.latitude, _currentPosition!.longitude), zoom: 14.5
+                ),
+                myLocationEnabled: true,
+                markers: _markers
+            ),
+            vibebar.VibeBar(addVibe:Clicker),
+          ],
       ),
+        ),
       ),
+      ]
+      )
     );
   }
 }

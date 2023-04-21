@@ -1,50 +1,159 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 
-// TODO: Make this stateful and tween between input state and bottom bar state
-class VibeBar extends StatelessWidget {
-  final width = ui.window.physicalSize.width;
-  final height = ui.window.physicalSize.height;
+class VibeBar extends StatefulWidget {
+  final void Function (String s) addVibe;
+  VibeBar({super.key, required this.addVibe});
 
-  final VoidCallback addVibe;
-  VibeBar({required this.addVibe});
+
+  @override
+  State<VibeBar> createState() => _VibeBarState();
+}
+
+class _VibeBarState extends State<VibeBar> {
+  bool toggle = false;
+
+  void toggleVibe() {
+    setState(() {
+      toggle ? toggle = false : toggle = true;
+    });
+  }
+
+  String typedMsg = "";
+
+
+
+  void sendVibe() {
+    print("SendingVibe");
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.fastOutSlowIn,
+      width: width - 10,
       height: height,
-      child: Stack(children: <Widget>[
-        // TODO: Make this responsive rather than static
-        Positioned(
-          bottom: 10,
-          left: 393 / 2 - 40,
-          child: ClipOval(
-              child: Container(
-                width: 81,
-                height: 81,
-                color: Colors.white.withOpacity(.7),
-                child: IconButton(
-                    onPressed: addVibe,
-                    icon: CustomPaint(
-                      size: Size(55, 55),
-                      painter: AddVibeIcon(),
-                    )),
-              )),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 5,
-          right: 5,
-          height: (width * 0.088).toDouble(),
-          child: IgnorePointer(
-            ignoring: true,
-            child: CustomPaint(
-              painter: BottomBarShape(),
+      bottom: toggle ? -height / 4 : 0,
+      left: 5,
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                height: width * 0.24,
+                child: Stack(children: <Widget>[
+                  Positioned(
+                    bottom: height * .014,
+                    left: width / 2 - width / 9,
+                    child: ClipOval(
+                      // TODO: Make this have cool blur effect in background
+                        child: Container(
+                          width: width / 5,
+                          height: width / 5,
+                          color: const Color(0xF8F8F8FF),
+                          child: IconButton(
+                              onPressed: toggleVibe,
+                              // TODO: Figure out how to smoothly animate
+                              icon: Transform.rotate(
+                                angle: toggle ? 0 : math.pi / 4,
+                                child: CustomPaint(
+                                  size: Size(width / 6, width / 6),
+                                  painter: AddVibeIcon(),
+                                ),
+                              )),
+                        )),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: width * 0.24,
+                    child: IgnorePointer(
+                      ignoring: true,
+                      child: CustomPaint(
+                        painter: BottomBarShape(),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
             ),
           ),
-        ),
-      ]),
+          Container(
+              height: height / 4,
+              width: width - 10,
+              color: Colors.white,
+              child: Stack(children: <Widget>[
+                Positioned(
+                  left: width * .05 - 5,
+                  width: width * .9,
+                  height: height / 4 - 20,
+                  child: Material(
+                    child: Stack(
+                        children: <Widget>[
+                          TextField(
+                            // TODO: make this have a cool blur effect in the background
+                            decoration: InputDecoration(
+                              hintText: "Share your message with the world!",
+                              hintStyle: TextStyle(color: Color(0xB2D4E8FF)),
+                              filled: true,
+                              fillColor: const Color(0xF8F8F8FF),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+
+                            ),
+                            minLines: 7,
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                            onChanged: (value) {typedMsg = value;}
+                          ),
+                          Positioned(
+                              right: width / 25,
+                              bottom: width / 25,
+                              child: ClipOval(
+                                child: Container(
+                                    color: Colors.white,
+                                    height: width / 8,
+                                    width: width / 8,
+                                    child: IconButton(
+                                        alignment: Alignment.center,
+                                        iconSize: width / 8,
+                                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                        onPressed: () => widget.addVibe(typedMsg),
+                                        icon: Icon(
+                                          Icons.chevron_right_rounded,
+                                          color: Color(0xff00a0ff),
+                                        )
+                                    )
+                                ),
+                              )
+                          )
+                        ]
+                    ),
+                  ),
+                )
+              ]))
+        ],
+      ),
     );
   }
 }
