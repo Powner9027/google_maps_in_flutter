@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
+//import 'dart:ui' as ui;
 import 'dart:math' as math;
 
 class VibeBar extends StatefulWidget {
-  final void Function (String s) addVibe;
-  VibeBar({super.key, required this.addVibe});
-
+  final void Function(String s) addVibe;
+  const VibeBar({super.key, required this.addVibe});
 
   @override
   State<VibeBar> createState() => _VibeBarState();
@@ -21,8 +20,6 @@ class _VibeBarState extends State<VibeBar> {
   }
 
   String typedMsg = "";
-
-
 
   void sendVibe() {
     print("SendingVibe");
@@ -51,22 +48,22 @@ class _VibeBarState extends State<VibeBar> {
                     bottom: height * .014,
                     left: width / 2 - width / 9,
                     child: ClipOval(
-                      // TODO: Make this have cool blur effect in background
+                        // TODO: Make this have cool blur effect in background
                         child: Container(
-                          width: width / 5,
-                          height: width / 5,
-                          color: const Color(0xF8F8F8FF),
-                          child: IconButton(
-                              onPressed: toggleVibe,
-                              // TODO: Figure out how to smoothly animate
-                              icon: Transform.rotate(
-                                angle: toggle ? 0 : math.pi / 4,
-                                child: CustomPaint(
-                                  size: Size(width / 6, width / 6),
-                                  painter: AddVibeIcon(),
-                                ),
-                              )),
-                        )),
+                      width: width / 5,
+                      height: width / 5,
+                      color: const Color(0xF8F8F8FF),
+                      child: IconButton(
+                          onPressed: toggleVibe,
+                          // TODO: Figure out how to smoothly animate
+                          icon: Transform.rotate(
+                            angle: toggle ? 0 : math.pi / 4,
+                            child: CustomPaint(
+                              size: Size(width / 6, width / 6),
+                              painter: AddVibeIcon(),
+                            ),
+                          )),
+                    )),
                   ),
                   Positioned(
                     bottom: 0,
@@ -94,61 +91,61 @@ class _VibeBarState extends State<VibeBar> {
                   width: width * .9,
                   height: height / 4 - 20,
                   child: Material(
-                    child: Stack(
-                        children: <Widget>[
-                          TextField(
-                            // TODO: make this have a cool blur effect in the background
-                            decoration: InputDecoration(
-                              hintText: "Share your message with the world!",
-                              hintStyle: TextStyle(color: Color(0xB2D4E8FF)),
-                              filled: true,
-                              fillColor: const Color(0xF8F8F8FF),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              border: OutlineInputBorder(
-                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide( width: 0.0, color: Colors.white ),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-
+                    child: Stack(children: <Widget>[
+                      TextField(
+                          // TODO: make this have a cool blur effect in the background
+                          decoration: InputDecoration(
+                            hintText: "Share your message with the world!",
+                            hintStyle: const TextStyle(color: Color(0xB2D4E8FF)),
+                            filled: true,
+                            fillColor: const Color(0xF8F8F8FF),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  width: 0.0, color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            minLines: 7,
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            onChanged: (value) {typedMsg = value;}
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  width: 0.0, color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  width: 0.0, color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                  width: 0.0, color: Colors.white),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
-                          Positioned(
-                              right: width / 25,
-                              bottom: width / 25,
-                              child: ClipOval(
-                                child: Container(
-                                    color: Colors.white,
-                                    height: width / 8,
-                                    width: width / 8,
-                                    child: IconButton(
-                                        alignment: Alignment.center,
-                                        iconSize: width / 8,
-                                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                        onPressed: () => widget.addVibe(typedMsg),
-                                        icon: Icon(
-                                          Icons.chevron_right_rounded,
-                                          color: Color(0xff00a0ff),
-                                        )
-                                    )
-                                ),
-                              )
-                          )
-                        ]
-                    ),
+                          minLines: 7,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          onChanged: (value) {
+                            typedMsg = value;
+                          }),
+                      Positioned(
+                          right: width / 25,
+                          bottom: width / 25,
+                          child: ClipOval(
+                            child: Container(
+                                color: Colors.white,
+                                height: width / 8,
+                                width: width / 8,
+                                child: IconButton(
+                                    alignment: Alignment.center,
+                                    iconSize: width / 8,
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    onPressed: () => widget.addVibe(typedMsg),
+                                    icon: const Icon(
+                                      Icons.chevron_right_rounded,
+                                      color: Color(0xff00a0ff),
+                                    ))),
+                          ))
+                    ]),
                   ),
                 )
               ]))
@@ -173,26 +170,26 @@ class BottomBarShape extends CustomPainter {
     path_0.lineTo(size.width * 0.3122066, size.height * 0.5388889);
     path_0.arcToPoint(Offset(size.width * 0.3946009, size.height * 0.2657407),
         radius:
-        Radius.elliptical(size.width * 0.1286385, size.height * 0.5074074),
+            Radius.elliptical(size.width * 0.1286385, size.height * 0.5074074),
         rotation: 0,
         largeArc: false,
         clockwise: false);
     path_0.arcToPoint(Offset(size.width * 0.6061033, size.height * 0.2657407),
         radius:
-        Radius.elliptical(size.width * 0.1169014, size.height * 0.4611111),
+            Radius.elliptical(size.width * 0.1169014, size.height * 0.4611111),
         rotation: 0,
         largeArc: false,
         clockwise: true);
     path_0.arcToPoint(Offset(size.width * 0.6884977, size.height * 0.5379630),
         radius:
-        Radius.elliptical(size.width * 0.1286385, size.height * 0.5074074),
+            Radius.elliptical(size.width * 0.1286385, size.height * 0.5074074),
         rotation: 0,
         largeArc: false,
         clockwise: false);
     path_0.lineTo(size.width * 0.9462441, size.height * 0.8157407);
     path_0.arcToPoint(Offset(size.width * 0.9997653, size.height * 0.9990741),
         radius:
-        Radius.elliptical(size.width * 0.08169014, size.height * 0.3222222),
+            Radius.elliptical(size.width * 0.08169014, size.height * 0.3222222),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -201,21 +198,21 @@ class BottomBarShape extends CustomPainter {
     path_0.moveTo(size.width * 0.5002347, size.height * 0.06944444);
     path_0.arcToPoint(Offset(size.width * 0.5002347, size.height * 0.8537037),
         radius:
-        Radius.elliptical(size.width * 0.09929577, size.height * 0.3916667),
+            Radius.elliptical(size.width * 0.09929577, size.height * 0.3916667),
         rotation: 0,
         largeArc: true,
         clockwise: false);
     path_0.arcToPoint(Offset(size.width * 0.5002347, size.height * 0.06944444),
         radius:
-        Radius.elliptical(size.width * 0.09929577, size.height * 0.3916667),
+            Radius.elliptical(size.width * 0.09929577, size.height * 0.3916667),
         rotation: 0,
         largeArc: false,
         clockwise: false);
     path_0.close();
 
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = Color(0xffffffff).withOpacity(1.0);
-    canvas.drawPath(path_0, paint_0_fill);
+    Paint paintFill0 = Paint()..style = PaintingStyle.fill;
+    paintFill0.color = const Color(0xffffffff).withOpacity(1.0);
+    canvas.drawPath(path_0, paintFill0);
   }
 
   @override
@@ -265,7 +262,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.05232558, size.height * 0.6197388);
     path_0.arcToPoint(Offset(size.width * 0.05232558, size.height * 0.3802612),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -274,7 +271,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.07412791, size.height * 0.4484761);
     path_0.arcToPoint(Offset(size.width * 0.09447674, size.height * 0.5776488),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -297,7 +294,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.7576197);
     path_0.arcToPoint(Offset(size.width * 0.08430233, size.height * 0.6473149),
         radius:
-        Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
+            Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -307,7 +304,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.1729651, size.height * 0.1727141);
     path_0.arcToPoint(Offset(size.width * 0.3808140, size.height * 0.05370102),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -316,7 +313,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.3313953, size.height * 0.1059507);
     path_0.arcToPoint(Offset(size.width * 0.2311047, size.height * 0.1886792),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -339,7 +336,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.3323657);
     path_0.arcToPoint(Offset(size.width * 0.1642442, size.height * 0.2133527),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -349,7 +346,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.6206395, size.height * 0.05370102);
     path_0.arcToPoint(Offset(size.width * 0.8270349, size.height * 0.1727141),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -358,7 +355,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.7572674, size.height * 0.1567489);
     path_0.arcToPoint(Offset(size.width * 0.6351744, size.height * 0.1117562),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -381,7 +378,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.07402032);
     path_0.arcToPoint(Offset(size.width * 0.5799419, size.height * 0.06676343),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -391,7 +388,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.9476744, size.height * 0.3802612);
     path_0.arcToPoint(Offset(size.width * 0.9476744, size.height * 0.6197388),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -400,7 +397,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.9258721, size.height * 0.5515239);
     path_0.arcToPoint(Offset(size.width * 0.9055233, size.height * 0.4223512),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -423,7 +420,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.2423803);
     path_0.arcToPoint(Offset(size.width * 0.9156977, size.height * 0.3526851),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -433,7 +430,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.8270349, size.height * 0.8272859);
     path_0.arcToPoint(Offset(size.width * 0.6206395, size.height * 0.9462990),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -442,7 +439,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.6686047, size.height * 0.8940493);
     path_0.arcToPoint(Offset(size.width * 0.7703488, size.height * 0.8113208),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -465,7 +462,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.6690856);
     path_0.arcToPoint(Offset(size.width * 0.8357558, size.height * 0.7866473),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -475,7 +472,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.moveTo(size.width * 0.3808140, size.height * 0.9462990);
     path_0.arcToPoint(Offset(size.width * 0.1729651, size.height * 0.8272859),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -484,7 +481,7 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.2427326, size.height * 0.8432511);
     path_0.arcToPoint(Offset(size.width * 0.3648256, size.height * 0.8896952),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -507,7 +504,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.9259797);
     path_0.arcToPoint(Offset(size.width * 0.4200581, size.height * 0.9332366),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -515,9 +512,9 @@ class AddVibeIcon extends CustomPainter {
     path_0.lineTo(size.width * 0.3808140, size.height * 0.9462990);
     path_0.close();
 
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = Color(0xff00ffa2).withOpacity(1.0);
-    canvas.drawPath(path_0, paint_0_fill);
+    Paint paintFill0 = Paint()..style = PaintingStyle.fill;
+    paintFill0.color = const Color(0xff00ffa2).withOpacity(1.0);
+    canvas.drawPath(path_0, paintFill0);
 
     Path path_1 = Path();
     path_1.moveTo(size.width * 0.3008721, size.height * 0.5297533);
@@ -559,7 +556,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.05232558, size.height * 0.3802612);
     path_1.arcToPoint(Offset(size.width * 0.1729651, size.height * 0.1727141),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -568,7 +565,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.1569767, size.height * 0.2423803);
     path_1.arcToPoint(Offset(size.width * 0.1104651, size.height * 0.3642961),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -591,7 +588,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.5515239);
     path_1.arcToPoint(Offset(size.width * 0.06540698, size.height * 0.4194485),
         radius:
-        Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
+            Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -601,7 +598,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.3808140, size.height * 0.05370102);
     path_1.arcToPoint(Offset(size.width * 0.6206395, size.height * 0.05370102),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -610,7 +607,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.5508721, size.height * 0.07402032);
     path_1.arcToPoint(Offset(size.width * 0.4229651, size.height * 0.09579100),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -633,7 +630,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.1567489);
     path_1.arcToPoint(Offset(size.width * 0.3531977, size.height * 0.08417997),
         radius:
-        Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
+            Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -643,7 +640,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.8270349, size.height * 0.1727141);
     path_1.arcToPoint(Offset(size.width * 0.9476744, size.height * 0.3802612),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -652,7 +649,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.8953488, size.height * 0.3323657);
     path_1.arcToPoint(Offset(size.width * 0.8125000, size.height * 0.2307692),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -675,7 +672,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.1059507);
     path_1.arcToPoint(Offset(size.width * 0.7863372, size.height * 0.1654572),
         radius:
-        Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
+            Radius.elliptical(size.width * 0.2543605, size.height * 0.2539913),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -685,7 +682,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.9476744, size.height * 0.6197388);
     path_1.arcToPoint(Offset(size.width * 0.8270349, size.height * 0.8272859),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -694,7 +691,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.8430233, size.height * 0.7576197);
     path_1.arcToPoint(Offset(size.width * 0.8895349, size.height * 0.6357039),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -717,7 +714,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.4484761);
     path_1.arcToPoint(Offset(size.width * 0.9345930, size.height * 0.5805515),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -727,7 +724,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.6206395, size.height * 0.9462990);
     path_1.arcToPoint(Offset(size.width * 0.3808140, size.height * 0.9462990),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -736,7 +733,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.4491279, size.height * 0.9259797);
     path_1.arcToPoint(Offset(size.width * 0.5770349, size.height * 0.9042090),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -759,7 +756,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.8432511);
     path_1.arcToPoint(Offset(size.width * 0.6468023, size.height * 0.9158200),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -769,7 +766,7 @@ class AddVibeIcon extends CustomPainter {
     path_1.moveTo(size.width * 0.1729651, size.height * 0.8272859);
     path_1.arcToPoint(Offset(size.width * 0.05232558, size.height * 0.6197388),
         radius:
-        Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
+            Radius.elliptical(size.width * 0.1627907, size.height * 0.1625544),
         rotation: 0,
         largeArc: false,
         clockwise: true);
@@ -784,7 +781,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.6690856);
     path_1.arcToPoint(Offset(size.width * 0.1875000, size.height * 0.7692308),
         radius:
-        Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
+            Radius.elliptical(size.width * 0.1031977, size.height * 0.1030479),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -807,7 +804,7 @@ class AddVibeIcon extends CustomPainter {
         size.height * 0.8940493);
     path_1.arcToPoint(Offset(size.width * 0.2136628, size.height * 0.8359942),
         radius:
-        Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
+            Radius.elliptical(size.width * 0.2558140, size.height * 0.2554427),
         rotation: 0,
         largeArc: false,
         clockwise: false);
@@ -815,9 +812,9 @@ class AddVibeIcon extends CustomPainter {
     path_1.lineTo(size.width * 0.1729651, size.height * 0.8272859);
     path_1.close();
 
-    Paint paint_1_fill = Paint()..style = PaintingStyle.fill;
-    paint_1_fill.color = Color(0xff00a0ff).withOpacity(1.0);
-    canvas.drawPath(path_1, paint_1_fill);
+    Paint paintFill1 = Paint()..style = PaintingStyle.fill;
+    paintFill1.color = const Color(0xff00a0ff).withOpacity(1.0);
+    canvas.drawPath(path_1, paintFill1);
   }
 
   @override
