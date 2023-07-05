@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 import 'vibebar.dart' as vibebar;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,6 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bitmap/bitmap.dart';
 
 void main() => runApp(const MyApp());
 
@@ -69,6 +72,10 @@ class _MyAppState extends State<MyApp> {
   String loggedOnPass = "Password";
   String? _currentAddress;
   Position? _currentPosition;
+  final double minVisibleDistance = 0; //The user shouldn't have to be literally overtop the pin to see the full image.
+  final double maxVisibleDistance = .01;
+  final int numIncrements = 10;
+  Uint8List bmpStatic = Uint8List(0);
 
   //Map<string, string> allUsers = "Username;Password\nAnotherName;AnotherPass\nJohnDoe;DoeJohn";
   Map<String, String> allUsers = {
@@ -133,69 +140,50 @@ class _MyAppState extends State<MyApp> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    setState(() {
-      _markers.add(Marker(
-          markerId: MarkerId("TestMarker${_markers.length}"),
-          position:
-              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          infoWindow:
-              const InfoWindow(title: "My Location", snippet: "GeoVibes"),
-          icon: bluePin));
+    //setState(() {
+      //_markers.add(Marker(
+      //    markerId: MarkerId("TestMarker${_markers.length}"),
+      //    position:
+      //        LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+      //    infoWindow:
+      //        const InfoWindow(title: "My Location", snippet: "GeoVibes"),
+      //    icon: bluePin));
       //AddMarker("Hello World", "John Doe", greenPin);
       //AddMarker("Do we have class today?", "Anonymous", greenPin);
       //AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
       //AddMarker("Anybody listening?", "Lorem Ipsum", greenPin);
       //AddMarker(
       //    "I couldn't think of another message to put here.", "Bob", greenPin);
-    });
+    //});
     loadPins();
   }
 
   void loadPins() async {
-    //final resp = await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
-    String arrayObjectsText =
-        '{"tags": [{"name": "dart", "quantity": 12}, {"name": "flutter", "quantity": 25}, {"name": "json", "quantity": 8}]}';
-
-    var tagObjectsJson = jsonDecode(arrayObjectsText)['tags'] as List;
-    List<Tag> tagObjects =
-        tagObjectsJson.map((tagJson) => Tag.fromJson(tagJson)).toList();
-
-    for (var element in tagObjects) {
-      print(element.toString());
-    }
-    //print(tagObjects);
-
-    /*
-    http.Response resp = await http.post(
-      Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      body: "{\"latitude\":55.123123,\"longitude\":29.696969,\"description\":\"Sorry if this messes up the other points!\"}"
-    );
-    print("resp: " + resp.toString());
-    print("body: " + resp.body);
-    print("code: " + resp.statusCode.toString());
-    */
+    //await http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
 
     final resp = await http
         .get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
-    print(resp.body);
     List<dynamic> tagObjectsJson2 = jsonDecode(resp.body);
-    for (var element in tagObjectsJson2) {
-      print("string: $element");
-    }
 
     List<Vibe> pinObjects =
         tagObjectsJson2.map((pinJson) => Vibe.fromJson(pinJson)).toList();
-    for (var element in pinObjects) {
-      print("parsed: ${element.latitude}; ${element.longitude}; ${element.description}");
-    }
+
+    bmpStatic = (await Bitmap.fromProvider(Image.asset('Assets/Static100_2.png').image)).buildHeaded();
 
     for (var element in pinObjects) {
-      print(
-          "Attempting to create ${element.latitude}; ${element.longitude}; ${element.description}; ${element.username}");
+      //If you don't want to do any editing, this line works by itself.
+      //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
       double dist = getDistance(LatLng(element.latitude, element.longitude));
+
+      Bitmap bmp = await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
+      var myIcon = BitmapDescriptor.fromBytes(ScrambleProfile(bmp, dist));
+      //Here is another way to get images:
+      //Image.asset("Asset/Monokuma.png");
+
+      //I.Image img = I.decodeImage((await rootBundle.load("Assets/Monokuma.png")).buffer.asUint8List())!;
+      //ScrambleProfile(img, dist);
+      //print(img.width);
+      //var myIcon =  BitmapDescriptor.fromBytes(img.getBytes());
       setState(() {
         _markers.add(Marker(
             markerId: MarkerId("TestMarker${_markers.length}"),
@@ -203,33 +191,32 @@ class _MyAppState extends State<MyApp> {
             infoWindow: InfoWindow(
                 title: dist <= .01 ? element.description : dist.toString(),
                 snippet: dist <= .01 ? element.username : ""),
-            icon: dist <= .01 ? greenPin : redPin));
+            //icon: dist <= .01 ? greenPin : redPin));
+            icon: myIcon));
       });
     }
-
-    //SaveMarker(MyPin(54.123123, 29.696969, "Sorry if this messes up the other points!"));
-    //http.Response resp = await http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
-    //  headers: <String, String>{
-    //    'Content-Type': 'application/json; charset=UTF-8',
-    //  },
-    //);
-    //print("resp: " + resp.toString());
-    //print("body: " + resp.body);
-    //print("code: " + resp.statusCode.toString());
   }
 
-  void saveMarker(Vibe pin) async {
-    //http.delete(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
-    /*
-    http.Response resp = await http.post(
-        Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: "{\"latitude\":55.123123,\"longitude\":29.696969,\"description\":\"Sorry if this messes up the other points!\"}"
-    );
-    */
+  //Note: Byreference is the default
+  Uint8List ScrambleProfile(Bitmap pfp, double dist)
+  {
+      Uint8List lst = pfp.buildHeaded();
+      int pixelCounter = 0;
+      int scrambleNumber =  10 * dist ~/ maxVisibleDistance; //Round down
+      print(scrambleNumber.toString());
+      for (int con = 112; con < lst.length; con++)
+        {
+          if (pixelCounter < scrambleNumber)
+              lst[con] = bmpStatic[con];
+
+          pixelCounter++;
+          if (pixelCounter >= numIncrements)
+            pixelCounter = 0;
+        }
+
+      return lst;
   }
+
 
   double getDistance(LatLng pinLoc) {
     return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
@@ -246,7 +233,6 @@ class _MyAppState extends State<MyApp> {
         infoWindow: InfoWindow(
             title: dist <= .01 ? message : dist.toString(), snippet: username),
         icon: dist <= .01 ? greenPin : redPin));
-    //icon:BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/pin_black.png").then((icon) destination = icon)));
   }
 
   double getRand(double low, double high) {
@@ -287,21 +273,12 @@ class _MyAppState extends State<MyApp> {
         displayLogin = false;
       });
     }
-
-    //print("Writing to file");
-    //File f = File("DeleteMe.txt");
-    //f.writeAsString("Success!");
   }
 
-  //_getLocation() async{
-  //  return Location(37.72068, -97.29339)
-  // }
-
   void clicker(String msg) async {
-    //LatLng pos = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
-    //msg = "Test Message " + (_markers.length - 2).toString();
-    LatLng pos =
-        LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+    LatLng pos = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
+    //LatLng pos = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+    //LatLng pos = LatLng(37.71911, -97.28101);
 
     setState(() {
       //TitleString += _markers.length.toString();
@@ -310,17 +287,12 @@ class _MyAppState extends State<MyApp> {
           position: LatLng(pos.latitude, pos.longitude),
           infoWindow: InfoWindow(title: msg, snippet: loggedOnUser),
           icon: orangePin));
-      print("Username:");
-      print(loggedOnUser);
-      print("UN");
       //37.71911, 97.28101: Right side of campus
       //37.71897, 97.29876: Left side of campus
       //37.72246, 97.29004: Top of campus
       //37.71611, 97.29034: Bottom of campus
     });
 
-    print(
-        "{\"latitude\":${pos.latitude},\"longitude\":${pos.longitude},\"description\":\"$msg\",\"username\":\"$loggedOnUser\"}");
     http.Response resp = await http.post(
         Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"),
         headers: <String, String>{
@@ -329,6 +301,21 @@ class _MyAppState extends State<MyApp> {
         body:
             "{\"latitude\":${pos.latitude},\"longitude\":${pos.longitude},\"description\":\"$msg\",\"username\":\"$loggedOnUser\"}");
   }
+
+  //Because the program loads before _currentPosition is initialized, errors are created when the map gets a null location, so this returns a dummy
+  //location instead.
+  LatLng GetCurrentLocation()
+  {
+    if (_currentPosition == null)
+      {
+        return LatLng(0, 0);
+      }
+    else
+      {
+        return LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+      }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -348,8 +335,7 @@ class _MyAppState extends State<MyApp> {
                   GoogleMap(
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
-                          target: LatLng(_currentPosition!.latitude,
-                              _currentPosition!.longitude),
+                          target: GetCurrentLocation(),
                           zoom: 14.5),
                       myLocationEnabled: true,
                       markers: _markers),
