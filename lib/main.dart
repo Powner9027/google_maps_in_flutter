@@ -1,14 +1,16 @@
-import 'package:flutter/services.dart';
-
 import 'vibebar.dart' as vibebar;
+
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bitmap/bitmap.dart';
+
+// If you want to get placemarks from geolocations, we need the following import
+import 'package:geocoding/geocoding.dart';
 
 void main() => runApp(const MyApp());
 
@@ -20,15 +22,14 @@ class MyApp extends StatefulWidget {
 }
 
 class Vibe {
-  late double latitude;
-  late double longitude;
+  late LatLng location;
   late String description;
   late String username;
 
-  Vibe(this.latitude, this.longitude, this.description, this.username);
+  Vibe(this.location, this.description, this.username);
 
   factory Vibe.fromJson(dynamic json) {
-    return Vibe(json['latitude'] as double, json['longitude'] as double,
+    return Vibe(LatLng(json['latitude'] as double, json['longitude'] as double),
         json['description'] as String, json['username'] as String);
   }
 }
@@ -70,7 +71,7 @@ class _MyAppState extends State<MyApp> {
   String strLoginStatus = "";
   String loggedOnUser = "User";
   String loggedOnPass = "Password";
-  String? _currentAddress;
+  //String? _currentAddress;
   Position? _currentPosition;
   final double minVisibleDistance = 0; //The user shouldn't have to be literally overtop the pin to see the full image.
   final double maxVisibleDistance = .01;
@@ -118,13 +119,14 @@ class _MyAppState extends State<MyApp> {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       setState(() => _currentPosition = position);
-      _getAddressFromLatLng(_currentPosition!);
+      //_getAddressFromLatLng(_currentPosition!);
     }).catchError((e) {
       debugPrint(e);
     });
   }
 
-  Future<void> _getAddressFromLatLng(Position position) async {
+  // TODO: See if we really need any of this commented-out code
+  /*Future<void> _getAddressFromLatLng(Position position) async {
     await placemarkFromCoordinates(
             _currentPosition!.latitude, _currentPosition!.longitude)
         .then((List<Placemark> placemarks) {
@@ -136,7 +138,7 @@ class _MyAppState extends State<MyApp> {
     }).catchError((e) {
       debugPrint(e);
     });
-  }
+  }*/
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -170,10 +172,10 @@ class _MyAppState extends State<MyApp> {
 
     bmpStatic = (await Bitmap.fromProvider(Image.asset('Assets/Static100_2.png').image)).buildHeaded();
 
-    for (var element in pinObjects) {
+    for (var pin in pinObjects) {
       //If you don't want to do any editing, this line works by itself.
       //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
-      double dist = getDistance(LatLng(element.latitude, element.longitude));
+      double dist = getDistance(pin.location);
 
       Bitmap bmp = await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
       var myIcon = BitmapDescriptor.fromBytes(ScrambleProfile(bmp, dist));
@@ -187,10 +189,10 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _markers.add(Marker(
             markerId: MarkerId("TestMarker${_markers.length}"),
-            position: LatLng(element.latitude, element.longitude),
+            position: pin.location,
             infoWindow: InfoWindow(
-                title: dist <= .01 ? element.description : dist.toString(),
-                snippet: dist <= .01 ? element.username : ""),
+                title: dist <= .01 ? pin.description : dist.toString(),
+                snippet: dist <= .01 ? pin.username : ""),
             //icon: dist <= .01 ? greenPin : redPin));
             icon: myIcon));
       });
@@ -219,8 +221,17 @@ class _MyAppState extends State<MyApp> {
 
 
   double getDistance(LatLng pinLoc) {
-    return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
-        pow(pinLoc.latitude - _currentPosition!.latitude, 2));
+    /* Geolocator already had the ability to find the distance between two points taking into
+       account the globe. Lol!
+     */
+    return Geolocator.distanceBetween(pinLoc.latitude,
+                                      pinLoc.longitude,
+                                      _currentPosition!.latitude,
+                                      _currentPosition!.longitude);
+
+    // TODO: Remove the following after confirming the above code works.
+    /*return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
+        pow(pinLoc.latitude - _currentPosition!.latitude, 2));*/
   }
 
   void addMarker(String message, String username, BitmapDescriptor pinColor) {
@@ -304,11 +315,11 @@ class _MyAppState extends State<MyApp> {
 
   //Because the program loads before _currentPosition is initialized, errors are created when the map gets a null location, so this returns a dummy
   //location instead.
-  LatLng GetCurrentLocation()
+  LatLng getCurrentLocation()
   {
     if (_currentPosition == null)
       {
-        return LatLng(0, 0);
+        return const LatLng(0, 0);
       }
     else
       {
@@ -335,7 +346,7 @@ class _MyAppState extends State<MyApp> {
                   GoogleMap(
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: CameraPosition(
-                          target: GetCurrentLocation(),
+                          target: getCurrentLocation(),
                           zoom: 14.5),
                       myLocationEnabled: true,
                       markers: _markers),
