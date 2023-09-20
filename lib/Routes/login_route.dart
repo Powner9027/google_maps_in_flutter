@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'map_route.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginRoute extends StatefulWidget {
+  const LoginRoute({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginRoute> createState() => _LoginRouteState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginRouteState extends State<LoginRoute> {
   bool displayLogin = true;
   bool blnLoginStatus = false;
   String strLoginStatus = "";
@@ -24,9 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           displayLogin = false;
         });
-        Navigator.of(context).push(
-
-        )
+        Navigator.of(context).push(const MapRoute() as Route<Object?>);
       } else {
         setState(() {
           strLoginStatus = "Incorrect password for username: $loggedOnUser";
@@ -134,8 +133,3 @@ class _LoginScreenState extends State<LoginScreen> {
       );
   }
 }
-
-/*class inputBox extends StatelessWidget {
-  @override
-
-}*/

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../networking.dart';
 //import 'dart:ui' as ui;
 import 'dart:math' as math;
 
 class VibeBar extends StatefulWidget {
-  final void Function(String s) addVibe;
-  const VibeBar({super.key, required this.addVibe});
+  const VibeBar({super.key});
 
   @override
   State<VibeBar> createState() => _VibeBarState();
@@ -20,10 +20,6 @@ class _VibeBarState extends State<VibeBar> {
   }
 
   String typedMsg = "";
-
-  void sendVibe() {
-    print("SendingVibe");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +135,8 @@ class _VibeBarState extends State<VibeBar> {
                                     iconSize: width / 8,
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    onPressed: () => widget.addVibe(typedMsg),
+                                    // FIXME: This needs to have the actual user, not hardcoded. We need to figure out how to store user info.
+                                    onPressed: () => sendVibe(typedMsg, "User"),
                                     icon: const Icon(
                                       Icons.chevron_right_rounded,
                                       color: Color(0xff00a0ff),
