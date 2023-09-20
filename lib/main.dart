@@ -1,4 +1,5 @@
 import 'vibebar.dart' as vibebar;
+import 'login_screen.dart' as login_route;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import 'dart:convert';
 import 'package:bitmap/bitmap.dart';
 
 // If you want to get placemarks from geolocations, we need the following import
-import 'package:geocoding/geocoding.dart';
+// import 'package:geocoding/geocoding.dart';
 
 void main() => runApp(const MyApp());
 
@@ -73,7 +74,8 @@ class _MyAppState extends State<MyApp> {
   String loggedOnPass = "Password";
   //String? _currentAddress;
   Position? _currentPosition;
-  final double minVisibleDistance = 0; //The user shouldn't have to be literally overtop the pin to see the full image.
+  final double minVisibleDistance =
+      0; //The user shouldn't have to be literally overtop the pin to see the full image.
   final double maxVisibleDistance = .01;
   final int numIncrements = 10;
   Uint8List bmpStatic = Uint8List(0);
@@ -143,19 +145,19 @@ class _MyAppState extends State<MyApp> {
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     //setState(() {
-      //_markers.add(Marker(
-      //    markerId: MarkerId("TestMarker${_markers.length}"),
-      //    position:
-      //        LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-      //    infoWindow:
-      //        const InfoWindow(title: "My Location", snippet: "GeoVibes"),
-      //    icon: bluePin));
-      //AddMarker("Hello World", "John Doe", greenPin);
-      //AddMarker("Do we have class today?", "Anonymous", greenPin);
-      //AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
-      //AddMarker("Anybody listening?", "Lorem Ipsum", greenPin);
-      //AddMarker(
-      //    "I couldn't think of another message to put here.", "Bob", greenPin);
+    //_markers.add(Marker(
+    //    markerId: MarkerId("TestMarker${_markers.length}"),
+    //    position:
+    //        LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+    //    infoWindow:
+    //        const InfoWindow(title: "My Location", snippet: "GeoVibes"),
+    //    icon: bluePin));
+    //AddMarker("Hello World", "John Doe", greenPin);
+    //AddMarker("Do we have class today?", "Anonymous", greenPin);
+    //AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
+    //AddMarker("Anybody listening?", "Lorem Ipsum", greenPin);
+    //AddMarker(
+    //    "I couldn't think of another message to put here.", "Bob", greenPin);
     //});
     loadPins();
   }
@@ -170,14 +172,17 @@ class _MyAppState extends State<MyApp> {
     List<Vibe> pinObjects =
         tagObjectsJson2.map((pinJson) => Vibe.fromJson(pinJson)).toList();
 
-    bmpStatic = (await Bitmap.fromProvider(Image.asset('Assets/Static100_2.png').image)).buildHeaded();
+    bmpStatic =
+        (await Bitmap.fromProvider(Image.asset('Assets/Static100_2.png').image))
+            .buildHeaded();
 
     for (var pin in pinObjects) {
       //If you don't want to do any editing, this line works by itself.
       //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
       double dist = getDistance(pin.location);
 
-      Bitmap bmp = await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
+      Bitmap bmp = await Bitmap.fromProvider(
+          Image.asset('Assets/Monokuma100.png').image);
       var myIcon = BitmapDescriptor.fromBytes(ScrambleProfile(bmp, dist));
       //Here is another way to get images:
       //Image.asset("Asset/Monokuma.png");
@@ -200,34 +205,27 @@ class _MyAppState extends State<MyApp> {
   }
 
   //Note: Byreference is the default
-  Uint8List ScrambleProfile(Bitmap pfp, double dist)
-  {
-      Uint8List lst = pfp.buildHeaded();
-      int pixelCounter = 0;
-      int scrambleNumber =  10 * dist ~/ maxVisibleDistance; //Round down
-      print(scrambleNumber.toString());
-      for (int con = 112; con < lst.length; con++)
-        {
-          if (pixelCounter < scrambleNumber)
-              lst[con] = bmpStatic[con];
+  Uint8List ScrambleProfile(Bitmap pfp, double dist) {
+    Uint8List lst = pfp.buildHeaded();
+    int pixelCounter = 0;
+    int scrambleNumber = 10 * dist ~/ maxVisibleDistance; //Round down
+    print(scrambleNumber.toString());
+    for (int con = 112; con < lst.length; con++) {
+      if (pixelCounter < scrambleNumber) lst[con] = bmpStatic[con];
 
-          pixelCounter++;
-          if (pixelCounter >= numIncrements)
-            pixelCounter = 0;
-        }
+      pixelCounter++;
+      if (pixelCounter >= numIncrements) pixelCounter = 0;
+    }
 
-      return lst;
+    return lst;
   }
-
 
   double getDistance(LatLng pinLoc) {
     /* Geolocator already had the ability to find the distance between two points taking into
        account the globe. Lol!
      */
-    return Geolocator.distanceBetween(pinLoc.latitude,
-                                      pinLoc.longitude,
-                                      _currentPosition!.latitude,
-                                      _currentPosition!.longitude);
+    return Geolocator.distanceBetween(pinLoc.latitude, pinLoc.longitude,
+        _currentPosition!.latitude, _currentPosition!.longitude);
 
     // TODO: Remove the following after confirming the above code works.
     /*return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
@@ -287,7 +285,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void clicker(String msg) async {
-    LatLng pos = LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
+    LatLng pos =
+        LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
     //LatLng pos = LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
     //LatLng pos = LatLng(37.71911, -97.28101);
 
@@ -315,121 +314,41 @@ class _MyAppState extends State<MyApp> {
 
   //Because the program loads before _currentPosition is initialized, errors are created when the map gets a null location, so this returns a dummy
   //location instead.
-  LatLng getCurrentLocation()
-  {
-    if (_currentPosition == null)
-      {
-        return const LatLng(0, 0);
-      }
-    else
-      {
-        return LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
-      }
+  LatLng getCurrentLocation() {
+    if (_currentPosition == null) {
+      return const LatLng(0, 0);
+    } else {
+      return LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
     _handleLocationPermission();
     _getCurrentPosition();
     return MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
-          colorSchemeSeed: Colors.blue,
-        ),
-        home: Stack(children: [
-          Visibility(
-            visible: displayLogin,
-            replacement: Scaffold(
-              body: Stack(
-                children: <Widget>[
-                  GoogleMap(
-                      onMapCreated: _onMapCreated,
-                      initialCameraPosition: CameraPosition(
-                          target: getCurrentLocation(),
-                          zoom: 14.5),
-                      myLocationEnabled: true,
-                      markers: _markers),
-                  vibebar.VibeBar(addVibe: clicker),
-                ],
-              ),
-            ),
-            child: Builder(builder: (BuildContext context) {
-              return Scaffold(
-                body: Column(
-                  children: [
-                    const SizedBox(height: 50),
-                    Row(children: [
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Username',
-                            //onChanged: (value) => LoggedOnUser = value,
-                          ),
-                          //onChanged: (value) => LoggedOnUser = value,
-                          onChanged: (value) {
-                            loggedOnUser = value;
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                    ]),
-                    const SizedBox(height: 50),
-                    Row(children: [
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Password',
-                          ),
-                          onChanged: (value) {
-                            loggedOnPass = value;
-                          },
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                    ]),
-                    const SizedBox(height: 25),
-                    Row(children: [
-                      const SizedBox(width: 50),
-                      TextButton(
-                          onPressed: login,
-                          style: TextButton.styleFrom(
-                            textStyle: const TextStyle(fontSize: 20),
-                          ),
-                          child: const Text("Log In")),
-                      const SizedBox(width: 50),
-                      TextButton(
-                          onPressed: createAccount,
-                          style: TextButton.styleFrom(
-                            textStyle: const TextStyle(fontSize: 20),
-                          ),
-                          child: const Text("Create Account")),
-                      const SizedBox(width: 50),
-                    ]),
-                    const SizedBox(height: 5),
-                    Visibility(
-                      visible: blnLoginStatus,
-                      child: Text(strLoginStatus,
-                          style: const TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              );
-            }),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.blue,
+      ),
+      home: Visibility(
+        visible: displayLogin,
+        replacement: Scaffold(
+          body: Stack(
+            children: <Widget>[
+              GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition:
+                      CameraPosition(target: getCurrentLocation(), zoom: 14.5),
+                  myLocationEnabled: true,
+                  markers: _markers),
+              vibebar.VibeBar(addVibe: clicker),
+            ],
           ),
-        ]));
+        ),
+        child: login_route.LoginScreen(),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
