@@ -6,6 +6,8 @@ import 'vibe.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:bitmap/bitmap.dart';
+import 'package:flutter/material.dart';
 
 // Standard Libraries
 import 'dart:convert';
@@ -13,6 +15,10 @@ import 'dart:math';
 
 // Move this stuff to its own file or class
 Random rng = Random();
+
+const double minVisibleDistance = 0; //The user shouldn't have to be literally overtop the pin to see the full image.
+const double maxVisibleDistance = .01;
+const int numIncrements = 10;
 
 BitmapDescriptor greenPin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
 BitmapDescriptor bluePin = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
@@ -39,6 +45,26 @@ double getRand(double low, double high) {
 
 Uint8List bmpStatic = Uint8List(0);
 
+Uint8List scrambleProfile(Bitmap pfp, double dist)
+{
+  Uint8List lst = pfp.buildHeaded();
+  int pixelCounter = 0;
+  int scrambleNumber =  10 * dist ~/ maxVisibleDistance; //Round down
+  print(scrambleNumber.toString());
+  for (int con = 112; con < lst.length; con++)
+  {
+    if (pixelCounter < scrambleNumber) {
+      lst[con] = bmpStatic[con];
+    }
+    pixelCounter++;
+    if (pixelCounter >= numIncrements) {
+      pixelCounter = 0;
+    }
+  }
+
+  return lst;
+}
+
 // End of 'Move this stuff'
 
 void loadVibes() async {
@@ -61,7 +87,7 @@ void loadVibes() async {
 
     Bitmap bmp = await Bitmap.fromProvider(
         Image.asset('Assets/Monokuma100.png').image);
-    var myIcon = BitmapDescriptor.fromBytes(ScrambleProfile(bmp, dist));
+    var myIcon = BitmapDescriptor.fromBytes(scrambleProfile(bmp, dist));
     //Here is another way to get images:
     //Image.asset("Asset/Monokuma.png");
 
