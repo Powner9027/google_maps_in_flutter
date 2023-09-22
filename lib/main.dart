@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
   //String? _currentAddress;
   Position? _currentPosition;
   final double minVisibleDistance = 0; //The user shouldn't have to be literally overtop the pin to see the full image.
-  final double maxVisibleDistance = .01;
+  final double maxVisibleDistance = 1000;
   final int numIncrements = 10;
   Uint8List bmpStatic = Uint8List(0);
 
@@ -142,21 +142,6 @@ class _MyAppState extends State<MyApp> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    //setState(() {
-      //_markers.add(Marker(
-      //    markerId: MarkerId("TestMarker${_markers.length}"),
-      //    position:
-      //        LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-      //    infoWindow:
-      //        const InfoWindow(title: "My Location", snippet: "GeoVibes"),
-      //    icon: bluePin));
-      //AddMarker("Hello World", "John Doe", greenPin);
-      //AddMarker("Do we have class today?", "Anonymous", greenPin);
-      //AddMarker("Any idea what's going on outside?", "Jane Doe", greenPin);
-      //AddMarker("Anybody listening?", "Lorem Ipsum", greenPin);
-      //AddMarker(
-      //    "I couldn't think of another message to put here.", "Bob", greenPin);
-    //});
     loadPins();
   }
 
@@ -174,25 +159,18 @@ class _MyAppState extends State<MyApp> {
 
     for (var pin in pinObjects) {
       //If you don't want to do any editing, this line works by itself.
-      //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
       double dist = getDistance(pin.location);
 
       Bitmap bmp = await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
       var myIcon = BitmapDescriptor.fromBytes(ScrambleProfile(bmp, dist));
-      //Here is another way to get images:
-      //Image.asset("Asset/Monokuma.png");
 
-      //I.Image img = I.decodeImage((await rootBundle.load("Assets/Monokuma.png")).buffer.asUint8List())!;
-      //ScrambleProfile(img, dist);
-      //print(img.width);
-      //var myIcon =  BitmapDescriptor.fromBytes(img.getBytes());
       setState(() {
         _markers.add(Marker(
             markerId: MarkerId("TestMarker${_markers.length}"),
             position: pin.location,
             infoWindow: InfoWindow(
-                title: dist <= .01 ? pin.description : dist.toString(),
-                snippet: dist <= .01 ? pin.username : ""),
+                title: dist <= maxVisibleDistance ? pin.description : dist.toString(),
+                snippet: dist <= maxVisibleDistance ? pin.username : ""),
             //icon: dist <= .01 ? greenPin : redPin));
             icon: myIcon));
       });
@@ -224,14 +202,19 @@ class _MyAppState extends State<MyApp> {
     /* Geolocator already had the ability to find the distance between two points taking into
        account the globe. Lol!
      */
+    print("JohnComeHere");
+    print(pinLoc.latitude.toString());
+    print(pinLoc.longitude.toString());
+    print(_currentPosition!.latitude.toString());
+    print(_currentPosition!.longitude.toString());
     return Geolocator.distanceBetween(pinLoc.latitude,
                                       pinLoc.longitude,
                                       _currentPosition!.latitude,
                                       _currentPosition!.longitude);
 
     // TODO: Remove the following after confirming the above code works.
-    /*return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
-        pow(pinLoc.latitude - _currentPosition!.latitude, 2));*/
+    //return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
+    //    pow(pinLoc.latitude - _currentPosition!.latitude, 2));
   }
 
   void addMarker(String message, String username, BitmapDescriptor pinColor) {
