@@ -25,7 +25,11 @@ class _LoginRouteState extends State<LoginRoute> {
         setState(() {
           displayLogin = false;
         });
-        Navigator.of(context).push(const MapRoute() as Route<Object?>);
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => const MapRoute()
+            )
+        );
       } else {
         setState(() {
           strLoginStatus = "Incorrect password for username: $loggedOnUser";
@@ -50,6 +54,11 @@ class _LoginRouteState extends State<LoginRoute> {
         blnLoginStatus = true;
       });
     } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const MapRoute()
+        )
+      );
       setState(() {
         displayLogin = false;
       });
