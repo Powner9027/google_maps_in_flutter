@@ -92,7 +92,8 @@ class _VibeBarState extends State<VibeBar> {
                           // TODO: make this have a cool blur effect in the background
                           decoration: InputDecoration(
                             hintText: "Share your message with the world!",
-                            hintStyle: const TextStyle(color: Color(0xB2D4E8FF)),
+                            hintStyle:
+                                const TextStyle(color: Color(0xB2D4E8FF)),
                             filled: true,
                             fillColor: const Color(0xF8F8F8FF),
                             focusedBorder: OutlineInputBorder(

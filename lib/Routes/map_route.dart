@@ -22,22 +22,21 @@ class _MapRouteState extends State<MapRoute> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: Stack(
-            children: <Widget>[
-              GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition:
-                  CameraPosition(target: GPS.getCurrentLocation(), zoom: 14.5),
-                  myLocationEnabled: true,
-                  markers: _markers),
-              const VibeBar(),
-            ],
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition:
+                CameraPosition(target: GPS.getCurrentLocation(), zoom: 14.5),
+            myLocationEnabled: true,
+            markers: _markers,
+            zoomControlsEnabled: false,
+            myLocationButtonEnabled: false,
           ),
-        )
-      ],
+          const VibeBar(),
+        ],
+      ),
     );
   }
 }
