@@ -35,7 +35,7 @@ class GPS {
   }
 
   // gets current position
-  static Future<void> _getCurrentPosition() async {
+  static Future<void> _retrievePosition() async {
     final hasPermission = await handleLocationPermission();
     if (!hasPermission) return;
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -47,12 +47,13 @@ class GPS {
     });
   }
 
-  static double getDistance(LatLng pinLoc) {
+  static double calcDistance(LatLng pinLoc) {
     /* Geolocator already had the ability to find the distance between two points taking into
        account the globe. Lol!
      */
+    _retrievePosition();
     return Geolocator.distanceBetween(pinLoc.latitude, pinLoc.longitude,
-        _currentPosition!.latitude, _currentPosition!.longitude);
+        getCurrentPosition().latitude, getCurrentPosition().longitude);
 
     // TODO: Remove the following after confirming the above code works.
     /*return sqrt(pow(pinLoc.longitude - _currentPosition!.longitude, 2) +
@@ -61,11 +62,9 @@ class GPS {
 
   //Because the program loads before _currentPosition is initialized, errors are created when the map gets a null location, so this returns a dummy
   //location instead.
-  static LatLng getCurrentLocation() {
-    if (_currentPosition == null) {
-      return const LatLng(0, 0);
-    } else {
-      return LatLng(_currentPosition!.latitude, _currentPosition!.longitude);
-    }
+
+  static LatLng getCurrentPosition() {
+    _retrievePosition();
+    return LatLng(_currentPosition?.latitude ?? 0, _currentPosition?.longitude ?? 0);
   }
 }

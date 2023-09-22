@@ -1,5 +1,4 @@
 // Custom Widgets
-import 'Widgets/vibebar.dart';
 import 'Routes/login_route.dart';
 
 // Classes

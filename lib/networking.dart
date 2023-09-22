@@ -35,7 +35,7 @@ final Set<Marker> _markers = {};
 void addMarker(String message, String username, BitmapDescriptor pinColor) {
   LatLng pinLoc =
       LatLng(getRand(37.71611, 37.72246), getRand(-97.29876, -97.28101));
-  double dist = GPS.getDistance(pinLoc);
+  double dist = GPS.calcDistance(pinLoc);
   _markers.add(Marker(
       markerId: MarkerId("TestMarker${_markers.length}"),
       position: pinLoc,
@@ -72,7 +72,7 @@ Uint8List scrambleProfile(Bitmap pfp, double dist) {
 
 void loadVibes() async {
   final resp =
-      await http.get(Uri.parse("https://vibranium.geovibes.app/pinpoints"));
+      await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
   List<dynamic> tagObjectsJson2 = jsonDecode(resp.body);
 
   List<Vibe> pinObjects =
@@ -85,7 +85,7 @@ void loadVibes() async {
   for (var pin in pinObjects) {
     //If you don't want to do any editing, this line works by itself.
     //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
-    double dist = GPS.getDistance(pin.location);
+    double dist = GPS.calcDistance(pin.location);
 
     Bitmap bmp =
         await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
