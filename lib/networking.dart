@@ -70,22 +70,24 @@ Uint8List scrambleProfile(Bitmap pfp, double dist) {
 
 // End of 'Move this stuff'
 
-void loadVibes() async {
+Future<Set<Marker>> loadVibes() async {
+  Set<Marker> markers = {};
+
   final resp =
       await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
   List<dynamic> tagObjectsJson2 = jsonDecode(resp.body);
 
-  List<Vibe> pinObjects =
+  List<Vibe> vibes =
       tagObjectsJson2.map((pinJson) => Vibe.fromJson(pinJson)).toList();
 
   bmpStatic =
       (await Bitmap.fromProvider(Image.asset('Assets/Static100_2.png').image))
           .buildHeaded();
 
-  for (var pin in pinObjects) {
+  for (var vibe in vibes) {
     //If you don't want to do any editing, this line works by itself.
     //var myIcon = await BitmapDescriptor.fromAssetImage(const ImageConfiguration(), 'Assets/Monokuma.jpg');
-    double dist = GPS.calcDistance(pin.location);
+    double dist = GPS.calcDistance(vibe.location);
 
     Bitmap bmp =
         await Bitmap.fromProvider(Image.asset('Assets/Monokuma100.png').image);
@@ -97,15 +99,16 @@ void loadVibes() async {
     //ScrambleProfile(img, dist);
     //print(img.width);
     //var myIcon =  BitmapDescriptor.fromBytes(img.getBytes());
-    _markers.add(Marker(
-        markerId: MarkerId("TestMarker${_markers.length}"),
-        position: pin.location,
+    markers.add(Marker(
+        markerId: MarkerId("TestMarker${markers.length}"),
+        position: vibe.location,
         infoWindow: InfoWindow(
-            title: dist <= .01 ? pin.description : dist.toString(),
-            snippet: dist <= .01 ? pin.username : ""),
+            title: dist <= .01 ? vibe.description : dist.toString(),
+            snippet: dist <= .01 ? vibe.username : ""),
         //icon: dist <= .01 ? greenPin : redPin));
         icon: myIcon));
   }
+  return markers;
 }
 
 void sendVibe(String msg, String currentUser) async {

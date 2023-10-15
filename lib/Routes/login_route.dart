@@ -19,6 +19,26 @@ class _LoginRouteState extends State<LoginRoute> {
     "AnotherUser": "AnotherPass"
   };
 
+  InputDecoration fieldStyle = InputDecoration(
+    filled: true,
+    fillColor: const Color(0xDDFFFFFF),
+    contentPadding: const EdgeInsets.all(16),
+    enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(
+          color: Colors.white,
+          width: 5,
+        )
+    ),
+    focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(
+          color: Colors.white,
+          width: 5,
+        )
+    ),
+  );
+
   void login() {
     if (allUsers.containsKey(loggedOnUser)) {
       if (allUsers[loggedOnUser] == loggedOnPass) {
@@ -62,77 +82,135 @@ class _LoginRouteState extends State<LoginRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 50),
-          Row(children: [
-            const SizedBox(
-              width: 50,
-            ),
-            Expanded(
-              child: TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Username',
-                  //onChanged: (value) => LoggedOnUser = value,
-                ),
-                //onChanged: (value) => LoggedOnUser = value,
-                onChanged: (value) {
-                  loggedOnUser = value;
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 50,
-            ),
-          ]),
-          const SizedBox(height: 50),
-          Row(children: [
-            const SizedBox(
-              width: 50,
-            ),
-            Expanded(
-              child: TextField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Password',
-                ),
-                onChanged: (value) {
-                  loggedOnPass = value;
-                },
-              ),
-            ),
-            const SizedBox(
-              width: 50,
-            ),
-          ]),
-          const SizedBox(height: 25),
-          Row(children: [
-            const SizedBox(width: 50),
-            TextButton(
-                onPressed: login,
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 20),
-                ),
-                child: const Text("Log In")),
-            const SizedBox(width: 50),
-            TextButton(
-                onPressed: createAccount,
-                style: TextButton.styleFrom(
-                  textStyle: const TextStyle(fontSize: 20),
-                ),
-                child: const Text("Create Account")),
-            const SizedBox(width: 50),
-          ]),
-          const SizedBox(height: 5),
-          Visibility(
-            visible: blnLoginStatus,
-            child:
-                Text(strLoginStatus, style: const TextStyle(color: Colors.red)),
+      body: Stack(
+        children: <Widget>[
+          Image.asset(
+            "Assets/earthrise.jpg",
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
           ),
-        ],
-      ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Spacer(),
+            Image.asset(
+              "Assets/geovibes_logo_white_border.png",
+              height: MediaQuery.of(context).size.height / 6.5,
+            ),
+            const Spacer(),
+            Row(children: [
+              const Spacer(),
+              Container(
+                width: MediaQuery.of(context).size.width * .9,
+                child: Column(
+                  children: [
+                    const Row(
+                      children: [
+                        SizedBox(width: 11),
+                        Text(
+                          "USERNAME",
+                          style: TextStyle(
+                            fontFamily: 'Brandon',
+                            fontSize: 32,
+                            color: Color(0xFFFFFFFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextField(
+                      style: const TextStyle(
+                          fontFamily: 'Brandon',
+                          fontSize: 20,
+                          color: Color(0xFF135498),
+                      ),
+                      decoration: fieldStyle,
+                      //onChanged: (value) => LoggedOnUser = value,
+                      onChanged: (value) {
+                        loggedOnUser = value;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+            ]),
+            const Spacer(),
+            Container(
+              width: MediaQuery.of(context).size.width * .9,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        SizedBox(width: 11),
+                        Text(
+                          "PASSWORD",
+                          style: TextStyle(
+                          fontFamily: 'Brandon',
+                          fontSize: 32,
+                          color: Color(0xFFFFFFFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextField(
+                      obscureText: true,
+                      style: const TextStyle(
+                        fontFamily: 'Brandon',
+                        fontSize: 20,
+                        color: Color(0xFF135498),
+                      ),
+                      decoration: fieldStyle,
+                      onChanged: (value) {
+                        loggedOnPass = value;
+                      },
+                    ),
+                  ],
+                ),
+            ),
+            const SizedBox(height: 25),
+            Row(children: [
+              const Spacer(),
+              TextButton(
+                  onPressed: login,
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  child: const Text(
+                      "Log In",
+                  style: TextStyle(
+                    fontFamily: 'Brandon',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 23,
+                    color: Color(0xFFFFFFFF),
+                  ))),
+              const Spacer(),
+              TextButton(
+                  onPressed: createAccount,
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
+                  child: const Text(
+                      "Create Account",
+                    style: TextStyle(
+                      fontFamily: 'Brandon',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 23,
+                      color: Color(0xFFFFFFFF),
+                    )
+                  )),
+              const Spacer(),
+            ]),
+            const Spacer(),
+            Visibility(
+              visible: blnLoginStatus,
+              child:
+                  Text(strLoginStatus, style: const TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      ]),
     );
   }
 }

@@ -13,8 +13,13 @@ class MapRoute extends StatefulWidget {
 
 class _MapRouteState extends State<MapRoute> {
   late GoogleMapController mapController;
-  Set<Marker> vibes = {};
+  Set<Marker> vibeMarkers = {};
   LatLng mapPosition = GPS.getCurrentPosition();
+
+  @override
+  void initState(){
+      _updatePosition();
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -22,10 +27,17 @@ class _MapRouteState extends State<MapRoute> {
     loadVibes();
   }
 
-  void _updatePosition() {
+  void _updatePosition() async {
     setState(() {
       mapPosition = GPS.getCurrentPosition();
     });
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+          CameraPosition(
+            zoom: 13.5,
+            target: mapPosition,
+      ))
+    ); 
   }
 
   @override
@@ -37,10 +49,9 @@ class _MapRouteState extends State<MapRoute> {
             initialCameraPosition:
                 CameraPosition(target: mapPosition, zoom: 14.5),
             myLocationEnabled: true,
-            markers: vibes,
+            markers: vibeMarkers,
             zoomControlsEnabled: false,
             myLocationButtonEnabled: false,
-            onCameraIdle: () => _updatePosition(),
           ),
           const VibeBar(),
         ],
