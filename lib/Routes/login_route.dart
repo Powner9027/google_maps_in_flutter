@@ -90,126 +90,136 @@ class _LoginRouteState extends State<LoginRoute> {
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Spacer(),
-            Image.asset(
-              "Assets/geovibes_logo_white_border.png",
-              height: MediaQuery.of(context).size.height / 6.5,
-            ),
-            const Spacer(),
-            Row(children: [
+          Container(
+            height: MediaQuery.of(context).size.height * .8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+              Image.asset(
+                "Assets/geovibes_logo_white_border.png",
+                height: MediaQuery.of(context).size.height / 6.5,
+              ),
+              const Spacer(),
+              Row(children: [
+                const Spacer(),
+                Container(
+                  width: MediaQuery.of(context).size.width * .9,
+                  height: 96,
+                  child: Stack(
+                    children: [
+                      const Row(
+                        children: [
+                          SizedBox(width: 11),
+                          Text(
+                            "USERNAME",
+                            style: TextStyle(
+                              fontFamily: 'Brandon',
+                              fontSize: 32,
+                              color: Color(0xFFFFFFFF),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.bottomStart,
+                        child: TextField(
+                          style: const TextStyle(
+                              fontFamily: 'Brandon',
+                              fontSize: 20,
+                              color: Color(0xFF135498),
+                          ),
+                          decoration: fieldStyle,
+                          //onChanged: (value) => LoggedOnUser = value,
+                          onChanged: (value) {
+                            loggedOnUser = value;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+              ]),
               const Spacer(),
               Container(
                 width: MediaQuery.of(context).size.width * .9,
-                child: Column(
-                  children: [
-                    const Row(
-                      children: [
-                        SizedBox(width: 11),
-                        Text(
-                          "USERNAME",
-                          style: TextStyle(
+                  height: 96,
+                  child: Stack(
+                    children: [
+                      const Row(
+                        children: [
+                          SizedBox(width: 11),
+                          Text(
+                            "PASSWORD",
+                            style: TextStyle(
                             fontFamily: 'Brandon',
                             fontSize: 32,
                             color: Color(0xFFFFFFFF),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    TextField(
-                      style: const TextStyle(
-                          fontFamily: 'Brandon',
-                          fontSize: 20,
-                          color: Color(0xFF135498),
+                        ],
                       ),
-                      decoration: fieldStyle,
-                      //onChanged: (value) => LoggedOnUser = value,
-                      onChanged: (value) {
-                        loggedOnUser = value;
-                      },
-                    ),
-                  ],
-                ),
+                      Align(
+                        alignment: AlignmentDirectional.bottomStart,
+                        child: TextField(
+                          obscureText: true,
+                          style: const TextStyle(
+                            fontFamily: 'Brandon',
+                            fontSize: 20,
+                            color: Color(0xFF135498),
+                          ),
+                          decoration: fieldStyle,
+                          onChanged: (value) {
+                            loggedOnPass = value;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
               ),
-              const Spacer(),
-            ]),
-            const Spacer(),
-            Container(
-              width: MediaQuery.of(context).size.width * .9,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        SizedBox(width: 11),
-                        Text(
-                          "PASSWORD",
-                          style: TextStyle(
-                          fontFamily: 'Brandon',
-                          fontSize: 32,
-                          color: Color(0xFFFFFFFF),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 25),
+              Row(children: [
+                const Spacer(),
+                TextButton(
+                    onPressed: login,
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 20),
                     ),
-                    TextField(
-                      obscureText: true,
-                      style: const TextStyle(
-                        fontFamily: 'Brandon',
-                        fontSize: 20,
-                        color: Color(0xFF135498),
-                      ),
-                      decoration: fieldStyle,
-                      onChanged: (value) {
-                        loggedOnPass = value;
-                      },
-                    ),
-                  ],
-                ),
-            ),
-            const SizedBox(height: 25),
-            Row(children: [
-              const Spacer(),
-              TextButton(
-                  onPressed: login,
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 20),
-                  ),
-                  child: const Text(
-                      "Log In",
-                  style: TextStyle(
-                    fontFamily: 'Brandon',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    color: Color(0xFFFFFFFF),
-                  ))),
-              const Spacer(),
-              TextButton(
-                  onPressed: createAccount,
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 20),
-                  ),
-                  child: const Text(
-                      "Create Account",
+                    child: const Text(
+                        "Log In",
                     style: TextStyle(
                       fontFamily: 'Brandon',
                       fontWeight: FontWeight.bold,
                       fontSize: 23,
                       color: Color(0xFFFFFFFF),
-                    )
-                  )),
+                    ))),
+                const Spacer(),
+                TextButton(
+                    onPressed: createAccount,
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    child: const Text(
+                        "Create Account",
+                      style: TextStyle(
+                        fontFamily: 'Brandon',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 23,
+                        color: Color(0xFFFFFFFF),
+                      )
+                    )),
+                const Spacer(),
+              ]),
               const Spacer(),
-            ]),
-            const Spacer(),
-            Visibility(
-              visible: blnLoginStatus,
-              child:
-                  Text(strLoginStatus, style: const TextStyle(color: Colors.red)),
-            ),
-          ],
+              Visibility(
+                visible: blnLoginStatus,
+                child:
+                    Text(strLoginStatus, style: const TextStyle(color: Colors.red)),
+              ),
+            ],
         ),
+          ),
       ]),
     );
   }
