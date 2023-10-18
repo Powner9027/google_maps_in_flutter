@@ -73,8 +73,8 @@ Uint8List scrambleProfile(Bitmap pfp, double dist) {
 Future<Set<Marker>> loadVibes() async {
   Set<Marker> markers = {};
 
-  final resp =
-      await http.get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
+  final resp = await http
+      .get(Uri.parse("https://gvserver-2zih4.ondigitalocean.app/pinpoints"));
   List<dynamic> tagObjectsJson2 = jsonDecode(resp.body);
 
   List<Vibe> vibes =
