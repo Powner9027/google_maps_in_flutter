@@ -16,7 +16,7 @@ class MapRoute extends StatefulWidget {
 class _MapRouteState extends State<MapRoute> {
   final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
   Set<Marker> vibeMarkers = {};
-  LatLng mapPosition = GPS.getCurrentPosition();
+  late LatLng mapPosition;
 
   @override
   void initState(){
@@ -25,23 +25,27 @@ class _MapRouteState extends State<MapRoute> {
 
   void _onMapCreated(GoogleMapController controller) async {
     controller.setMapStyle(await rootBundle.loadString('Assets/map_style.json'));
-    mapController.complete(controller);
     _updatePosition();
+    _animateCamera(controller);
+    mapController.complete(controller);
     loadVibes();
   }
 
-  void _updatePosition() async {
+  void _updatePosition() {
     setState(() {
       mapPosition = GPS.getCurrentPosition();
     });
+  }
+
+  void _animateCamera(controller) {
     // this needs to be async like this says: https://pub.dev/packages/google_maps_flutter
-    /*mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-          CameraPosition(
-            zoom: 13.5,
-            target: mapPosition,
-      ))
-    ); */
+    controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+            CameraPosition(
+              zoom: 13.5,
+              target: mapPosition,
+            ))
+    );
   }
 
   @override
